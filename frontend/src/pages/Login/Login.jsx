@@ -7,12 +7,12 @@ import authContext from "../../store/store";
 
 function Login() {
   const navigate = useNavigate();
-  const { token, setToken } = useContext(authContext);
+  const { token, setToken, setUserName } = useContext(authContext);  // Add token here
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
 
-  // Add useEffect to check authentication status
+  // Now this useEffect will work properly
   useEffect(() => {
     if (token) {
       navigate('/');
@@ -41,9 +41,11 @@ function Login() {
         setAlertMessage('Login successful!');
         setShowAlert(true);
         
-        // Store token in both context and localStorage
+        // Store both token and userName
         localStorage.setItem('token', response.data.token);
+        localStorage.setItem('userName', response.data.user.name);
         setToken(response.data.token);
+        setUserName(response.data.user.name);
         
         setTimeout(() => {
           setShowAlert(false);

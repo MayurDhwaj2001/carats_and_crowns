@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faGear, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { NavLink, Outlet } from "react-router-dom";
 import authContext from "../../store/store";
 import { useContext, useState, useEffect } from "react";
@@ -8,26 +8,38 @@ import "../../css/navbar.css";
 
 function Index() {
   const [toggle, setToggle] = useState(false);
-  const authCtx = useContext(authContext);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { token, setToken, userName } = useContext(authContext);
   const cartLength = useSelector((state) => state.cart.length);
 
   const signOutHandler = () => {
     localStorage.removeItem("token");
-    authCtx.setToken(null);
-    alert("Sign-out successful.");
+    localStorage.removeItem("userName");
+    setToken(null);
+    setShowDropdown(false);
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name.split(" ").map(word => word[0]).join("").toUpperCase();
   };
 
   const toggleHandler = () => {
     setToggle(!toggle);
   };
 
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
   useEffect(() => {
-    // Get token from localStorage on component mount
-    const token = localStorage.getItem("token");
-    if (token) {
-      authCtx.setToken(token);
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
     }
-  }, []); // Empty dependency array means this runs once on mount
+  }, [setToken]);
+
+
 
   return (
     <>
@@ -80,10 +92,35 @@ function Index() {
             </li>
 
             <li className="menu-item">
-              {authCtx.token ? (
-                <button onClick={signOutHandler} className="logout-btn">
-                  Logout
-                </button>
+              {token ? (
+                <div className="relative">
+                  <button 
+                    onClick={toggleDropdown}
+                    className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg font-semibold focus:outline-none hover:bg-indigo-700"
+                  >
+                    {getInitials(userName)}
+                  </button>
+                  
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                      <NavLink
+                        to="/settings"
+                        onClick={() => setShowDropdown(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FontAwesomeIcon icon={faGear} className="mr-2" />
+                        Settings
+                      </NavLink>
+                      <button
+                        onClick={signOutHandler}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FontAwesomeIcon icon={faSignOut} className="mr-2" />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <NavLink
                   to="/login"
@@ -97,7 +134,6 @@ function Index() {
           </ul>
         </div>
       </nav>
-
       <Outlet />
     </>
   );

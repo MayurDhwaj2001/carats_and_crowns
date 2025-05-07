@@ -10,17 +10,22 @@ import { ReduxStore } from "./store/redux/ReduxStore";
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [userName, setUserName] = useState(() => localStorage.getItem('userName'));
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
+    const storedUserName = localStorage.getItem('userName');
     if (storedToken) {
       setToken(storedToken);
+    }
+    if (storedUserName) {
+      setUserName(storedUserName);
     }
   }, []);
 
   return (
     <Provider store={ReduxStore}>
-      <authContext.Provider value={{ token, setToken }}>
+      <authContext.Provider value={{ token, setToken, userName, setUserName }}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
