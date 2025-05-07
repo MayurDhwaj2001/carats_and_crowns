@@ -41,6 +41,8 @@ function Login() {
         setAlertMessage('Login successful!');
         setShowAlert(true);
         
+        // Store token in both context and localStorage
+        localStorage.setItem('token', response.data.token);
         setToken(response.data.token);
         
         setTimeout(() => {
