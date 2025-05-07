@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -7,10 +7,17 @@ import authContext from "../../store/store";
 
 function Login() {
   const navigate = useNavigate();
-  const { setToken } = useContext(authContext);
+  const { token, setToken } = useContext(authContext);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
+  const [alertType, setAlertType] = useState('success');
+
+  // Add useEffect to check authentication status
+  useEffect(() => {
+    if (token) {
+      navigate('/');
+    }
+  }, [token, navigate]);
 
   const initialValues = {
     email: "",
@@ -30,27 +37,22 @@ function Login() {
       });
 
       if (response.data.success) {
-        // Show success message
         setAlertType('success');
         setAlertMessage('Login successful!');
         setShowAlert(true);
         
-        // Set token and navigate after a short delay
         setToken(response.data.token);
         
-        // Hide alert and navigate after 1.5 seconds
         setTimeout(() => {
           setShowAlert(false);
           navigate("/");
         }, 1500);
       }
     } catch (error) {
-      // Show error message
       setAlertType('error');
       setAlertMessage(error.response?.data?.message || 'Login failed');
       setShowAlert(true);
       
-      // Hide alert after 3 seconds
       setTimeout(() => {
         setShowAlert(false);
       }, 3000);

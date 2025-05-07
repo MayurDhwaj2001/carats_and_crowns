@@ -21,21 +21,18 @@ function Index() {
     setToggle(!toggle);
   };
 
-  const getToken = () => {
-    const token = localStorage.getItem("token");
-    authCtx.setToken(token);
-  };
-
   useEffect(() => {
-    getToken();
-  }, []);
+    // Get token from localStorage on component mount
+    const token = localStorage.getItem("token");
+    if (token) {
+      authCtx.setToken(token);
+    }
+  }, []); // Empty dependency array means this runs once on mount
 
   return (
     <>
       <nav className="navbar">
         <NavLink className="brand" to="/">
-          {/* You can replace with actual logo image */}
-          {/* <img src="./assets/LOGO.jpg" className="nav-logo" alt="Logo" /> */}
           Carats & Crowns
         </NavLink>
 
