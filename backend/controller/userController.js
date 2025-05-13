@@ -8,13 +8,23 @@ const fatchUser = async (req, res) => {
     const { value, error } = AllValidation.fatchUser.validate(userdata);
     if (error !== undefined) {
       console.log("error", error);
+      res.status(400).json({ success: false, message: error.message });
     } else {
-      const Respons = await userService.fatchUser(value);
-      console.log("Response form Servises:", Respons);
-      res.send({ accessToken: Respons , email:value.email });
+      const response = await userService.fatchUser(value);
+      console.log("Response from Services:", response);
+      if (response === "NOT FOUND!" || response === "Password wrong!") {
+        res.status(401).json({ success: false, message: response });
+      } else {
+        res.json({
+          success: true,
+          token: response.token,
+          user: response.user
+        });
+      }
     }
   } catch (error) {
     console.log(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 const createUser = async (req, res) => {

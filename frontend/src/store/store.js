@@ -3,8 +3,10 @@ import { createContext } from "react";
 const authContext = createContext({
   token: null,
   userName: null,
+  userRole: null,
   setToken: () => {},
-  setUserName: () => {}
+  setUserName: () => {},
+  setUserRole: () => {}
 });
 
 export default authContext;

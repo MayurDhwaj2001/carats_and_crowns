@@ -7,7 +7,7 @@ import authContext from "../../store/store";
 
 function Login() {
   const navigate = useNavigate();
-  const { token, setToken, setUserName } = useContext(authContext);  // Add token here
+  const { token, setToken, setUserName, setUserRole } = useContext(authContext);  // Add setUserRole here
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
@@ -31,7 +31,7 @@ function Login() {
 
   const handleSubmit = async (values) => {
     try {
-      const response = await axios.post("http://localhost:3000/users/login", {
+      const response = await axios.post("http://localhost:3000/users/fatchuser", {  // Changed to match backend route
         email: values.email,
         password: values.password,
       });
@@ -41,15 +41,24 @@ function Login() {
         setAlertMessage('Login successful!');
         setShowAlert(true);
         
-        // Store both token and userName
+        // Store token and user data
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userName', response.data.user.name);
+        localStorage.setItem('userRole', response.data.user.role);
+        
+        // Update context
         setToken(response.data.token);
         setUserName(response.data.user.name);
+        setUserRole(response.data.user.role);
         
         setTimeout(() => {
           setShowAlert(false);
-          navigate("/");
+          // Redirect based on role
+          if (response.data.user.role === 'admin') {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
         }, 1500);
       }
     } catch (error) {

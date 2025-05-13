@@ -25,6 +25,11 @@ const user = Sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    role: {  // Add this field
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'user'  // Default role if not specified
+    }
   },
   {
     timestamps: true,
