@@ -89,10 +89,12 @@ const { createUser, fatchUser } = require("../controller/userController");
 
 /* GET users listing. */
 router.post("/createuser", createUser);
+// Change this line
 router.post("/fatchuser", fatchUser);
 
-// Add these routes to your existing users.js
-
+// To this
+router.post("/login", fatchUser);
+// Remove the duplicate routes
 router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;

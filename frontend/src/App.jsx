@@ -9,6 +9,8 @@ import { Provider } from "react-redux";
 import { ReduxStore } from "./store/redux/ReduxStore";
 import AdminRoute from "./routing/AdminRoute";
 import AdminDashboard from "./pages/Admin/Dashboard";
+import ManageProducts from "./pages/Admin/Products/ManageProducts";
+import ProductForm from "./pages/Admin/Products/ProductForm";
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
@@ -47,6 +49,21 @@ function App() {
           <Route path="/admin" element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          } />
+          <Route path="/admin/products" element={
+            <AdminRoute>
+              <ManageProducts />
+            </AdminRoute>
+          } />
+          <Route path="/admin/products/new" element={
+            <AdminRoute>
+              <ProductForm />
+            </AdminRoute>
+          } />
+          <Route path="/admin/products/edit/:id" element={
+            <AdminRoute>
+              <ProductForm />
             </AdminRoute>
           } />
           <Route path="/*" element={<MyRoutes />} />

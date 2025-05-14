@@ -26,13 +26,21 @@ const fatchUser = async (value) => {
           role: user.role,  // Include role in token payload
         };
         const token = await createToken(RetriveUpdate);
-        return { token, user: { name: user.name, role: user.role } };  // Return user data with role
+        return { 
+          token, 
+          user: { 
+            id: user.id,  // Add this line
+            name: user.name, 
+            role: user.role 
+          } 
+        };
       } else {
         return "Password wrong!";
       }
     }
   } catch (error) {
     console.log(error);
+    throw error;  // Add this line to properly propagate the error
   }
 };
 const createUser = async (data) => {

@@ -6,25 +6,24 @@ const fatchUser = async (req, res) => {
     const userdata = req.body;
     console.log(userdata)
     const { value, error } = AllValidation.fatchUser.validate(userdata);
-    if (error !== undefined) {
+    if (error) {  // Change from error !== undefined
       console.log("error", error);
-      res.status(400).json({ success: false, message: error.message });
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    const response = await userService.fatchUser(value);
+    console.log("Response from Services:", response);
+    if (response === "NOT FOUND!" || response === "Password wrong!") {
+      res.status(401).json({ success: false, message: response });
     } else {
-      const response = await userService.fatchUser(value);
-      console.log("Response from Services:", response);
-      if (response === "NOT FOUND!" || response === "Password wrong!") {
-        res.status(401).json({ success: false, message: response });
-      } else {
-        res.json({
-          success: true,
-          token: response.token,
-          user: response.user
-        });
-      }
+      res.json({
+        success: true,
+        token: response.token,
+        user: response.user
+      });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 const createUser = async (req, res) => {

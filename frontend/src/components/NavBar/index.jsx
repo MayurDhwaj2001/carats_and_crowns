@@ -9,7 +9,7 @@ import "../../css/navbar.css";
 function Index() {
   const [toggle, setToggle] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const { token, setToken, userName, setUserName } = useContext(authContext);  // Add setUserName
+  const { token, setToken, userName, setUserName, userRole } = useContext(authContext);
   const cartLength = useSelector((state) => state.cart.length);
 
   const signOutHandler = () => {
@@ -93,53 +93,19 @@ function Index() {
                 Contact
               </NavLink>
             </li>
-
+            {userRole === 'admin' && (
+              <li className="menu-item">
+                <NavLink to="/admin" onClick={() => setToggle(false)}>
+                  <FontAwesomeIcon icon={faGear} className="mr-2" />
+                  Admin Panel
+                </NavLink>
+              </li>
+            )}
             <li className="menu-item">
               <NavLink to="/cart" onClick={() => setToggle(false)}>
                 <FontAwesomeIcon icon={faCartShopping} />
                 <span className="p-1 rounded-full">{cartLength}</span>
               </NavLink>
-            </li>
-
-            <li className="menu-item">
-              {token ? (
-                <div className="relative">
-                  <button 
-                    onClick={toggleDropdown}
-                    className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg font-semibold focus:outline-none hover:bg-indigo-700"
-                  >
-                    {userName ? getInitials(userName) : ""}
-                  </button>
-                  
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                      <NavLink
-                        to="/settings"
-                        onClick={() => setShowDropdown(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        <FontAwesomeIcon icon={faGear} className="mr-2" />
-                        Settings
-                      </NavLink>
-                      <button
-                        onClick={signOutHandler}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        <FontAwesomeIcon icon={faSignOut} className="mr-2" />
-                        Logout
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <NavLink
-                  to="/login"
-                  onClick={() => setToggle(false)}
-                  className="login-btn"
-                >
-                  Login
-                </NavLink>
-              )}
             </li>
           </ul>
         </div>

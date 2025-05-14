@@ -5,14 +5,23 @@ import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import authContext from "../../store/store";
 
+// Create axios instance with default config
+const api = axios.create({
+  baseURL: 'http://localhost:5000',  // Update port to 5000
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+});
+
 function Login() {
   const navigate = useNavigate();
-  const { token, setToken, setUserName, setUserRole } = useContext(authContext);  // Add setUserRole here
+  const { token, setToken, setUserName, setUserRole } = useContext(authContext);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
 
-  // Now this useEffect will work properly
   useEffect(() => {
     if (token) {
       navigate('/');
@@ -22,18 +31,18 @@ function Login() {
   const initialValues = {
     email: "",
     password: "",
-    rememberMe: false  // Add this field
+    rememberMe: false
   };
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email format").required("*Required"),
     password: Yup.string().required("*Required"),
-    rememberMe: Yup.boolean()  // Add this field
+    rememberMe: Yup.boolean()
   });
 
   const handleSubmit = async (values) => {
     try {
-      const response = await axios.post("http://localhost:3000/users/fatchuser", {  // Changed to match backend route
+      const response = await api.post("/users/login", {  // Change from /users/fatchuser to /users/login
         email: values.email,
         password: values.password,
       });
@@ -43,27 +52,24 @@ function Login() {
         setAlertMessage('Login successful!');
         setShowAlert(true);
         
-        // Store token and user data
         if (values.rememberMe) {
-          // If remember me is checked, use localStorage
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('userName', response.data.user.name);
           localStorage.setItem('userRole', response.data.user.role);
+          localStorage.setItem('userId', response.data.user.id);  // Add this line
         } else {
-          // If remember me is not checked, use sessionStorage (cleared when browser closes)
           sessionStorage.setItem('token', response.data.token);
           sessionStorage.setItem('userName', response.data.user.name);
           sessionStorage.setItem('userRole', response.data.user.role);
+          sessionStorage.setItem('userId', response.data.user.id);  // Add this line
         }
         
-        // Update context
         setToken(response.data.token);
         setUserName(response.data.user.name);
         setUserRole(response.data.user.role);
         
         setTimeout(() => {
           setShowAlert(false);
-          // Redirect based on role
           if (response.data.user.role === 'admin') {
             navigate("/admin");
           } else {
@@ -85,7 +91,6 @@ function Login() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
-        {/* Alert/Popup Message */}
         {showAlert && (
           <div className={`p-4 mb-4 text-sm rounded-lg ${
             alertType === 'success' 
