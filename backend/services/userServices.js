@@ -50,5 +50,18 @@ const createUser = async (data) => {
 };
 const updateUser = async () => {};
 const deleteUser = async () => {};
+const findUserByEmail = async (email) => {
+  try {
+    const user = await model.user.findOne({
+      where: {
+        email: email,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
-module.exports = { fatchUser, createUser, updateUser, deleteUser };
+module.exports = { fatchUser, createUser, updateUser, deleteUser, findUserByEmail };

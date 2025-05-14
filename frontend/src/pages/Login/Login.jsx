@@ -22,11 +22,13 @@ function Login() {
   const initialValues = {
     email: "",
     password: "",
+    rememberMe: false  // Add this field
   };
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email format").required("*Required"),
     password: Yup.string().required("*Required"),
+    rememberMe: Yup.boolean()  // Add this field
   });
 
   const handleSubmit = async (values) => {
@@ -42,9 +44,17 @@ function Login() {
         setShowAlert(true);
         
         // Store token and user data
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userName', response.data.user.name);
-        localStorage.setItem('userRole', response.data.user.role);
+        if (values.rememberMe) {
+          // If remember me is checked, use localStorage
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('userName', response.data.user.name);
+          localStorage.setItem('userRole', response.data.user.role);
+        } else {
+          // If remember me is not checked, use sessionStorage (cleared when browser closes)
+          sessionStorage.setItem('token', response.data.token);
+          sessionStorage.setItem('userName', response.data.user.name);
+          sessionStorage.setItem('userRole', response.data.user.role);
+        }
         
         // Update context
         setToken(response.data.token);
@@ -125,8 +135,9 @@ function Login() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <input
+                <Field
                   type="checkbox"
+                  name="rememberMe"
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 />
                 <label className="ml-2 block text-sm text-gray-900">

@@ -9,13 +9,23 @@ import "../../css/navbar.css";
 function Index() {
   const [toggle, setToggle] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const { token, setToken, userName } = useContext(authContext);
+  const { token, setToken, userName, setUserName } = useContext(authContext);  // Add setUserName
   const cartLength = useSelector((state) => state.cart.length);
 
   const signOutHandler = () => {
+    // Clear localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("userName");
+    localStorage.removeItem("userRole");
+    
+    // Clear sessionStorage
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("userRole");
+    
+    // Clear context
     setToken(null);
+    setUserName(null);  // Clear the userName
     setShowDropdown(false);
   };
 
@@ -33,7 +43,7 @@ function Index() {
   };
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
     if (storedToken) {
       setToken(storedToken);
     }
@@ -98,7 +108,7 @@ function Index() {
                     onClick={toggleDropdown}
                     className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg font-semibold focus:outline-none hover:bg-indigo-700"
                   >
-                    {getInitials(userName)}
+                    {userName ? getInitials(userName) : ""}
                   </button>
                   
                   {showDropdown && (
