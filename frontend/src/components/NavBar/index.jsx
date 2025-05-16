@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping, faGear, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faGear, faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
 import { NavLink, Outlet } from "react-router-dom";
 import authContext from "../../store/store";
 import { useContext, useState, useEffect } from "react";
@@ -49,13 +49,11 @@ function Index() {
     }
   }, [setToken]);
 
-
-
   return (
     <>
       <nav className="navbar">
         <NavLink className="brand" to="/">
-          Carats & Crowns
+          <img src="/images/Logo.png" alt="Carats & Crowns Logo" className="h-10" />
         </NavLink>
 
         <input
@@ -106,6 +104,40 @@ function Index() {
                 <FontAwesomeIcon icon={faCartShopping} />
                 <span className="p-1 rounded-full">{cartLength}</span>
               </NavLink>
+            </li>
+            
+            {/* Add login/user profile button */}
+            <li className="menu-item">
+              {token ? (
+                <div className="relative">
+                  <button 
+                    onClick={toggleDropdown}
+                    className="flex items-center focus:outline-none"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center mr-2">
+                      {getInitials(userName)}
+                    </div>
+                    <span className="hidden md:inline">{userName}</span>
+                  </button>
+                  
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                      <button
+                        onClick={signOutHandler}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FontAwesomeIcon icon={faSignOut} className="mr-2" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <NavLink to="/login" onClick={() => setToggle(false)} className="flex items-center">
+                  <FontAwesomeIcon icon={faUser} className="mr-2" />
+                  <span>Login</span>
+                </NavLink>
+              )}
             </li>
           </ul>
         </div>

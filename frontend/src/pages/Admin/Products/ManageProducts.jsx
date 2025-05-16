@@ -72,6 +72,7 @@ function ManageProducts() {
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           Back to Dashboard
         </Link>
+        
         <h1 className="text-2xl font-bold flex-grow">Manage Products</h1>
         <button
           onClick={() => navigate('/admin/products/new')}
@@ -131,7 +132,7 @@ function ManageProducts() {
                 <p>Type: {product.Type}</p>
               </div>
               <div className="flex justify-between items-center mt-4">
-                <span className="text-lg font-bold">${product.Price}</span>
+                <span className="text-lg font-bold">₹{product.Price}</span>
                 <div className="space-x-2">
                   <button
                     onClick={() => navigate(`/admin/products/edit/${product.ProductId}`)}

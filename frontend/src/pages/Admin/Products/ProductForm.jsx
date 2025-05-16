@@ -230,7 +230,7 @@ function ProductForm() {
           </div>
 
           <div>
-            <label className="block mb-2">Price ($)</label>
+            <label className="block mb-2">Price (₹)</label>
             <input
               type="number"
               step="0.01"

@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Remove, Update } from "../../store/redux/cart/CartAction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTrash,
+  faXmark,
   faSquarePlus,
   faSquareMinus,
 } from "@fortawesome/free-solid-svg-icons";
@@ -10,18 +10,15 @@ import { NavLink } from "react-router-dom";
 
 function Cart() {
   const cart = useSelector((state) => state.cart);
-  // const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
 
   const INCQuantityHendeler = ({ id, quantity, price }) => {
-    console.log(id, quantity, price);
     const newQuantity = quantity + 1;
     const item = { id, quantity: newQuantity, price };
     dispatch(Update(item));
   };
 
   const DECQuantityHendeler = ({ id, quantity, price }) => {
-    console.log(id, quantity, price);
     if (quantity > 1) {
       const newQuantity = quantity - 1;
       const item = { id, quantity: newQuantity, price };
@@ -35,132 +32,86 @@ function Cart() {
   const TotalPrice = total.toFixed(2);
 
   return (
-    <div className="bg-gradient-to-r  from-slate-400  to-slate-200 mt-14 text-cente p-4 min-h-screen">
-      <h1 className=" font-bold text-2xl p-20 text-center">Shopping Cart</h1>
-      <div className="rounded-2xl backdrop-blur-sm bg-white/30 w-10/12 m-auto">
-        <div className="flex  justify-around items-center p-4 ">
-          <div className="p-4">
-            {cart.length === 0 ? (
-              <>
-                <h1 className="text-center">0 Product in cart</h1>
-              </>
-            ) : (
-              <>
-                {cart.map((item, index) => {
-                  return (
-                    <>
-                      <div
-                        className="flex m-4 justify-between  items-center max-sm:flex-col"
-                        key={index}
-                      >
-                        <div className=" overflow-hidden mix-blend-multiply flex justify-center">
-                          <img
-                            src={item.image}
-                            alt=""
-                            width="100"
-                            className=" object-contain"
-                          />
-                        </div>
-                        <div className=" font-bold p-2 text-center">
-                          <h4>
-                            Name:{" "}
-                            <span className=" text-blue-600">
-                              {item.title?.slice(0, 10)}
-                            </span>
-                          </h4>
-                          <h4>
-                            Price:
-                            <span className=" text-blue-600">{`${item.total.toFixed(
-                              2
-                            )}$`}</span>
-                          </h4>
-                          <h4>
-                            Quantity:{" "}
-                            <span className=" text-blue-600">
-                              {item.quantity}
-                            </span>
-                          </h4>
-                          <div className="">
-                            <div className="">
-                              <FontAwesomeIcon
-                                icon={faSquareMinus}
-                                className=" cursor-pointer text-2xl"
-                                onClick={() =>
-                                  DECQuantityHendeler(
-                                    (item = {
-                                      id: item.id,
-                                      quantity: item.quantity,
-                                      price: item.price,
-                                    })
-                                  )
-                                }
-                              />
-                              <input
-                                type="number"
-                                className="outline-none p-2 m-2  w-10 text-center font-bold"
-                                disabled
-                                value={item.quantity}
-                              />
-                              <FontAwesomeIcon
-                                icon={faSquarePlus}
-                                className=" cursor-pointer text-2xl"
-                                onClick={() =>
-                                  INCQuantityHendeler(
-                                    (item = {
-                                      id: item.id,
-                                      quantity: item.quantity,
-                                      price: item.price,
-                                    })
-                                  )
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <div className=" text-blue-500  font-bold hover:text-red-500 ">
-                              <button
-                                type="button"
-                                className=" tracking-widest	"
-                                onClick={() => dispatch(Remove(item.id))}
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  );
-                })}
-              </>
-            )}
+    <div className="bg-[#F7F0EA] mt-14 min-h-screen py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-[#4D3C2A] mb-8 text-center">Shopping Cart</h1>
+        
+        {cart.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+            <p className="text-gray-600 text-lg">Your cart is empty</p>
+            <NavLink to="/products" className="inline-block mt-4 text-[#AC8F6F] hover:text-[#4D3C2A] transition-colors">
+              Continue Shopping
+            </NavLink>
           </div>
-          <div className="text-center  p-4">
-            <h1 className=" font-bold text-3xl ">Total Price</h1>
-            <h1 className="p-2">{`${TotalPrice}$`}</h1>
-            {cart.length > 0 ? (
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {cart.map((item, index) => (
+              <div key={index} className="flex items-center p-6 border-b border-gray-100 last:border-0">
+                <div className="w-24 h-24 flex-shrink-0">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                </div>
+                
+                <div className="ml-6 flex-grow">
+                  <h3 className="text-[#4D3C2A] font-medium">{item.title}</h3>
+                  <p className="text-[#AC8F6F] mt-1">₹{item.price}</p>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <FontAwesomeIcon
+                      icon={faSquareMinus}
+                      className="text-2xl text-[#AC8F6F] cursor-pointer hover:text-[#4D3C2A] transition-colors"
+                      onClick={() => DECQuantityHendeler({
+                        id: item.id,
+                        quantity: item.quantity,
+                        price: item.price,
+                      })}
+                    />
+                    <input
+                      type="number"
+                      className="w-16 text-center font-medium border-2 border-[#AC8F6F] rounded-md py-1"
+                      value={item.quantity}
+                      disabled
+                    />
+                    <FontAwesomeIcon
+                      icon={faSquarePlus}
+                      className="text-2xl text-[#AC8F6F] cursor-pointer hover:text-[#4D3C2A] transition-colors"
+                      onClick={() => INCQuantityHendeler({
+                        id: item.id,
+                        quantity: item.quantity,
+                        price: item.price,
+                      })}
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={() => dispatch(Remove(item.id))}
+                    className="text-[#AC8F6F] hover:text-[#4D3C2A] transition-colors ml-4"
+                  >
+                    <FontAwesomeIcon icon={faXmark} className="text-xl" />
+                  </button>
+                </div>
+              </div>
+            ))}
+            
+            <div className="p-6 bg-[#F7F0EA] mt-4">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-medium text-[#4D3C2A]">Total:</span>
+                <span className="text-2xl font-bold text-[#4D3C2A]">₹{TotalPrice}</span>
+              </div>
+              
               <NavLink
                 to="/checkout"
-                className="p-2 bg-black text-white hover:bg-gradient-to-r from-cyan-500 to-blue-500 duration-300"
+                className="mt-4 w-full bg-[#4D3C2A] text-white py-3 px-6 rounded-lg hover:bg-[#AC8F6F] transition-colors duration-300 font-semibold text-center block"
               >
-                Checkout
+                Proceed to Checkout
               </NavLink>
-            ) : (
-              <></>
-            )}
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="m-20 text-center">
-        {cart.length !== 0 ? (
-          <NavLink
-            to="/products"
-            className="p-2 bg-black text-white hover:bg-gradient-to-r from-cyan-500 to-blue-500 duration-300"
-          >
-            want to add more products ?
-          </NavLink>
-        ) : (
-          <></>
         )}
       </div>
     </div>

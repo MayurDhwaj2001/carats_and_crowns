@@ -1,9 +1,9 @@
 :root {
   /* Colors */
-  --primary-bg: #1d1d1f;
-  --text-light: #e4e4e4;
-  --text-muted: #bdbdbd;
-  --accent: #00cccc;
+  --primary-bg: #4D3C2A;
+  --text-light: #F3F3F3;
+  --text-muted: #AC8F6F;
+  --accent: #AC8F6F;
 
   /* Fonts */
   --font-heading: "Bodoni Moda", serif;

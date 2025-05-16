@@ -1,3 +1,4 @@
+avbar.css
 .hidden {
   display: none;
 }
@@ -19,7 +20,7 @@
   width: 100%;
   transition: top 0.3s ease;
   z-index: 1000;
-  background-color: #fff;
+  background-color: #F7F0EA;
 }
 
 .navbar .brand {
@@ -28,8 +29,11 @@
   font-weight: 700;
   line-height: inherit;
   text-transform: uppercase;
-  color: #252a32;
+  color: #4D3C2A;
 }
+
+
+
 
 .nav-logo {
   width: 6vw;
@@ -249,5 +253,6 @@ header {
 }
 
 .menu-item .dropdown-item:hover {
-  background-color: #F3F4F6;
+  background-color: #AC8F6F;
+  color: #F3F3F3;
 }
