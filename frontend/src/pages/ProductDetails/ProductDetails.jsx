@@ -7,8 +7,12 @@ import { useParams, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Add } from "../../store/redux/cart/CartAction";
+import { useContext } from "react";
+import authContext from "../../store/store";
 
 function ProductDetails() {
+  // Add token to destructured values from authContext
+  const { token } = useContext(authContext);
   const [data, setData] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -51,21 +55,14 @@ function ProductDetails() {
     setTimeout(() => setShowPopup(false), 3000); // Hide after 3 seconds
   };
 
-  const AddToCartHandeler = () => {
-    const existingItem = cartSelecter.cart.find((item) => item.id === data.ProductId);
-    if (existingItem) {
-      dispatch(Add({
-        ...existingItem,
-        quantity: existingItem.quantity + 1,
-        total: data.Price * (existingItem.quantity + 1)
-      }));
-      showNotification("Item quantity updated in cart");
-      return;
-    } else {
-      dispatch(Add(item));
-      showNotification("Added to cart successfully");
+  const addToCartHandler = () => {
+    if (!token) {
+      showNotification("Please login to add items to cart");
       return;
     }
+    
+    dispatch(Add(item));
+    showNotification("Item added to cart successfully");
   };
 
   useEffect(() => {
@@ -166,7 +163,7 @@ function ProductDetails() {
   
               <button
                 className="w-full bg-[#4D3C2A] text-white py-3 px-6 rounded-lg hover:bg-[#AC8F6F] transition-colors duration-300 font-semibold"
-                onClick={AddToCartHandeler}
+                onClick={addToCartHandler}  // Fix the function name here
               >
                 Add to Cart
               </button>

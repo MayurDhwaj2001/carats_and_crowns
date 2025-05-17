@@ -3,14 +3,17 @@ import { faCartShopping, faGear, faSignOut, faUser } from "@fortawesome/free-sol
 import { NavLink, Outlet } from "react-router-dom";
 import authContext from "../../store/store";
 import { useContext, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import "../../css/navbar.css";
+import { Clear_cart } from "../../store/redux/cart/CartActionType";
 
 function Index() {
   const [toggle, setToggle] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { token, setToken, userName, setUserName, userRole } = useContext(authContext);
-  const cartLength = useSelector((state) => state.cart.length);
+  // Change this line
+  const cartLength = useSelector((state) => state?.length || 0);
+  const dispatch = useDispatch();
 
   const signOutHandler = () => {
     // Clear localStorage
@@ -25,8 +28,11 @@ function Index() {
     
     // Clear context
     setToken(null);
-    setUserName(null);  // Clear the userName
+    setUserName(null);
     setShowDropdown(false);
+
+    // Clear cart
+    dispatch({ type: Clear_cart });
   };
 
   const getInitials = (name) => {

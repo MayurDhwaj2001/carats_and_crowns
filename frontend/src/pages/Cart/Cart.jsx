@@ -1,5 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Remove, Update } from "../../store/redux/cart/CartAction";
+import { useContext, useEffect } from "react";
+import authContext from "../../store/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faXmark,
@@ -7,30 +9,72 @@ import {
   faSquareMinus,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
+import axios from 'axios';
+import { Replace_cart } from "../../store/redux/cart/CartActionType";
 
 function Cart() {
-  const cart = useSelector((state) => state.cart);
+  const cart = useSelector((state) => state || []);
   const dispatch = useDispatch();
+  const { token } = useContext(authContext);
 
-  const INCQuantityHendeler = ({ id, quantity, price }) => {
-    const newQuantity = quantity + 1;
-    const item = { id, quantity: newQuantity, price };
-    dispatch(Update(item));
+  // Add this calculation before using TotalPrice
+  const TotalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (token) {
+        try {
+          const userId = JSON.parse(atob(token.split('.')[1])).id;
+          const response = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+          const cartItems = response.data.map(item => ({
+            id: item.product_id,
+            cartId: item.id, // Add this line to store the cart item ID
+            quantity: item.quantity,
+            price: item.price,
+            title: item.product.productname,
+            image: item.product.images[0]
+          }));
+          dispatch({ type: Replace_cart, payload: cartItems });
+        } catch (error) {
+          console.error('Error fetching cart:', error);
+        }
+      }
+    };
+    fetchCart();
+  }, [token, dispatch]);
+
+  const INCQuantityHendeler = (item) => {
+    const newQuantity = item.quantity + 1;
+    dispatch(Update({
+      id: item.id,
+      cartId: item.cartId,
+      quantity: newQuantity,
+      price: item.price,
+      title: item.title,
+      image: item.image
+    }));
   };
 
-  const DECQuantityHendeler = ({ id, quantity, price }) => {
-    if (quantity > 1) {
-      const newQuantity = quantity - 1;
-      const item = { id, quantity: newQuantity, price };
-      dispatch(Update(item));
+  const DECQuantityHendeler = (item) => {
+    if (item.quantity > 1) {
+      const newQuantity = item.quantity - 1;
+      dispatch(Update({
+        id: item.id,
+        cartId: item.cartId,
+        quantity: newQuantity,
+        price: item.price,
+        title: item.title,
+        image: item.image
+      }));
     } else {
-      dispatch(Remove(id));
+      dispatch(Remove({
+        id: item.id,
+        cartId: item.cartId
+      }));
     }
   };
 
-  const total = cart.reduce((a, c) => a + c.price * c.quantity, 0);
-  const TotalPrice = total.toFixed(2);
-
+  // Update the cart item JSX
   return (
     <div className="bg-[#F7F0EA] mt-14 min-h-screen py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -65,11 +109,7 @@ function Cart() {
                     <FontAwesomeIcon
                       icon={faSquareMinus}
                       className="text-2xl text-[#AC8F6F] cursor-pointer hover:text-[#4D3C2A] transition-colors"
-                      onClick={() => DECQuantityHendeler({
-                        id: item.id,
-                        quantity: item.quantity,
-                        price: item.price,
-                      })}
+                      onClick={() => DECQuantityHendeler(item)} // Pass the entire item
                     />
                     <input
                       type="number"
@@ -80,16 +120,15 @@ function Cart() {
                     <FontAwesomeIcon
                       icon={faSquarePlus}
                       className="text-2xl text-[#AC8F6F] cursor-pointer hover:text-[#4D3C2A] transition-colors"
-                      onClick={() => INCQuantityHendeler({
-                        id: item.id,
-                        quantity: item.quantity,
-                        price: item.price,
-                      })}
+                      onClick={() => INCQuantityHendeler(item)} // Pass the entire item
                     />
                   </div>
                   
                   <button
-                    onClick={() => dispatch(Remove(item.id))}
+                    onClick={() => dispatch(Remove({
+                      id: item.id,
+                      cartId: item.cartId
+                    }))}
                     className="text-[#AC8F6F] hover:text-[#4D3C2A] transition-colors ml-4"
                   >
                     <FontAwesomeIcon icon={faXmark} className="text-xl" />
