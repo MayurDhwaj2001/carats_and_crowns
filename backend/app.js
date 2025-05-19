@@ -8,6 +8,7 @@ var cors = require("cors");
 var uploadRouter = require('./routes/upload');
 var productsRouter = require('./routes/products');
 var cartRouter = require('./routes/cart');
+const stripeRoutes = require('./routes/stripe');
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -37,11 +38,15 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Configure routes
 app.use("/", indexRouter);
+// Change this line
 app.use("/users", usersRouter);
+// To this
+app.use("/api/users", usersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/products', productsRouter);
 // Add this with other route configurations
 app.use('/api/cart', cartRouter);
+app.use('/api', stripeRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -19,9 +19,9 @@ function Footer() {
             <a href="#">
               <div>
                 <img
-                  src="./assets/LOGO.jpg"
+                  src="/images/LogoWhite.png"
                   className="footer-logo"
-                  alt="TJ Design Studio Logo"
+                  alt="Carats & Crowns Logo"
                 />
               </div>
             </a>

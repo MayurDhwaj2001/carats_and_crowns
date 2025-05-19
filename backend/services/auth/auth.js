@@ -20,7 +20,8 @@ async function compareHash(Pass) {
 
 async function createToken(argu) {
   console.log("MYARGU:", argu);
-  const token = await jwt.sign(argu, "mysecretkeyofcreatingtoken", {
+  // Remove the 'const' keyword since it's already declared
+  let token = await jwt.sign(argu, process.env.JWT_SECRET || "mysecretkeyofcreatingtoken", {
     expiresIn: 604800,
   });
   console.log("TOKEN FROM AUTH!", token);

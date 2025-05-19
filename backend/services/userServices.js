@@ -9,7 +9,6 @@ const fatchUser = async (value) => {
         email: value.email,
       },
     });
-    console.log("Value:", user);
 
     if (!user) {
       return "NOT FOUND!";
@@ -18,18 +17,19 @@ const fatchUser = async (value) => {
         userPass: value.password,
         dbPass: user.password,
       };
-      const res = compareHash(Pass);
+      // Add await here to properly handle the async password comparison
+      const res = await compareHash(Pass);
       if (res) {
         const RetriveUpdate = {
           id: user.id,
           email: user.email,
-          role: user.role,  // Include role in token payload
+          role: user.role,
         };
         const token = await createToken(RetriveUpdate);
         return { 
           token, 
           user: { 
-            id: user.id,  // Add this line
+            id: user.id,
             name: user.name, 
             role: user.role 
           } 
@@ -40,7 +40,7 @@ const fatchUser = async (value) => {
     }
   } catch (error) {
     console.log(error);
-    throw error;  // Add this line to properly propagate the error
+    throw error;
   }
 };
 const createUser = async (data) => {
@@ -71,5 +71,17 @@ const findUserByEmail = async (email) => {
     throw error;
   }
 };
+const getAllUsers = async () => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email', 'role'],
+      order: [['createdAt', 'DESC']]
+    });
+    return users;
+  } catch (error) {
+    console.error('Error in getAllUsers service:', error);
+    throw error;
+  }
+};
 
-module.exports = { fatchUser, createUser, updateUser, deleteUser, findUserByEmail };
+module.exports = { fatchUser, createUser, updateUser, deleteUser, findUserByEmail, getAllUsers };

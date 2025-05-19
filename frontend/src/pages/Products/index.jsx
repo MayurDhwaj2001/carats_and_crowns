@@ -126,7 +126,7 @@ const Products = () => {
                     id={item.ProductId}
                     name={item.ProductName}
                     price={item.Price}
-                    image={item.Images && item.Images[0] ? item.Images[0] : '/default-product-image.jpg'}
+                    image={item.Images && item.Images[0] ? `http://localhost:5000/${item.Images[0]}` : '/default-product-image.jpg'}
                   />
                 ))
               )}

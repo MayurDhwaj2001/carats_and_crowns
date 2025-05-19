@@ -89,12 +89,12 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+    <div className="min-h-screen bg-[#F7F0EA] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#F3F3F3] p-8 rounded-xl shadow-lg">
         {showAlert && (
           <div className={`p-4 mb-4 text-sm rounded-lg ${
             alertType === 'success' 
-              ? 'bg-green-100 text-green-700' 
+              ? 'bg-[#AC8F6F] text-[#F3F3F3]' 
               : 'bg-red-100 text-red-700'
           }`} role="alert">
             {alertMessage}
@@ -103,11 +103,13 @@ function Login() {
         
         <div>
           <NavLink to="/">
-            <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-              Carats and Crowns
-            </h1>
+            <img 
+              src="/images/Logo.png" 
+              alt="Carats and Crowns" 
+              className="h-16 mx-auto"
+            />
           </NavLink>
-          <h2 className="mt-6 text-center text-2xl font-semibold text-gray-700">
+          <h2 className="mt-6 text-center text-2xl font-semibold text-[#212121]">
             Sign in to your account
           </h2>
         </div>
@@ -120,7 +122,7 @@ function Login() {
           <Form className="mt-8 space-y-6">
             <div>
               <Field
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-[#AC8F6F] placeholder-[#AC8F6F] text-[#212121] focus:outline-none focus:ring-[#4D3C2A] focus:border-[#4D3C2A] focus:z-10 sm:text-sm"
                 type="email"
                 name="email"
                 placeholder="Email Address"
@@ -130,7 +132,7 @@ function Login() {
 
             <div>
               <Field
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-[#AC8F6F] placeholder-[#AC8F6F] text-[#212121] focus:outline-none focus:ring-[#4D3C2A] focus:border-[#4D3C2A] focus:z-10 sm:text-sm"
                 type="password"
                 name="password"
                 placeholder="Password"
@@ -143,15 +145,15 @@ function Login() {
                 <Field
                   type="checkbox"
                   name="rememberMe"
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#4D3C2A] focus:ring-[#AC8F6F] border-[#AC8F6F] rounded accent-[#4D3C2A]"
                 />
-                <label className="ml-2 block text-sm text-gray-900">
+                <label className="ml-2 block text-sm text-[#212121]">
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <NavLink to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <NavLink to="/forgot-password" className="font-medium text-[#4D3C2A] hover:text-[#AC8F6F]">
                   Forgot your password?
                 </NavLink>
               </div>
@@ -159,16 +161,16 @@ function Login() {
 
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-[#F3F3F3] bg-[#4D3C2A] hover:bg-[#AC8F6F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4D3C2A]"
             >
               Sign in
             </button>
           </Form>
         </Formik>
 
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center text-sm text-[#212121]">
           Don't have an account?{" "}
-          <NavLink to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <NavLink to="/signup" className="font-medium text-[#4D3C2A] hover:text-[#AC8F6F]">
             Sign up
           </NavLink>
         </p>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import authContext from '../../../store/store';
 
 // Create an axios instance with authentication
 const api = axios.create({
@@ -15,6 +16,7 @@ const api = axios.create({
 });
 
 function ManageProducts() {
+  const { token } = useContext(authContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,11 +26,15 @@ function ManageProducts() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [token]);
 
   const fetchProducts = async () => {
     try {
-      const response = await api.get('/api/products');
+      const response = await api.get('/api/products', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setProducts(response.data);
       setLoading(false);
     } catch (error) {
@@ -62,21 +68,30 @@ function ManageProducts() {
   const uniqueCarats = [...new Set(products.map(product => product.GoldCarat))];
   const uniqueTypes = [...new Set(products.map(product => product.Type))];
 
+  const handleEdit = (productId) => {
+    navigate(`/admin/products/edit/${productId}`);
+  };
+
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return '/placeholder-image.jpg';
+    return imageUrl.startsWith('http') ? imageUrl : `http://localhost:5000${imageUrl}`;
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-[#F7F0EA] px-4 py-8">
       <div className="flex items-center mb-6">
         <Link 
           to="/admin" 
-          className="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 flex items-center mr-4"
+          className="bg-[#AC8F6F] text-[#F3F3F3] px-4 py-2 rounded hover:bg-[#4D3C2A] flex items-center mr-4 transition-colors duration-200"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           Back to Dashboard
         </Link>
         
-        <h1 className="text-2xl font-bold flex-grow">Manage Products</h1>
+        <h1 className="text-2xl font-bold text-[#212121] flex-grow">Manage Products</h1>
         <button
           onClick={() => navigate('/admin/products/new')}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+          className="bg-[#4D3C2A] text-[#F3F3F3] px-4 py-2 rounded hover:bg-[#AC8F6F] transition-colors duration-200"
         >
           Add New Product
         </button>
@@ -89,12 +104,12 @@ function ManageProducts() {
             placeholder="Search by product name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 p-2 border rounded"
+            className="flex-1 p-2 border border-[#AC8F6F] rounded bg-[#F3F3F3] text-[#212121]"
           />
           <select
             value={filterCarat}
             onChange={(e) => setFilterCarat(e.target.value)}
-            className="p-2 border rounded"
+            className="p-2 border border-[#AC8F6F] rounded bg-[#F3F3F3] text-[#212121]"
           >
             <option value="">All Carats</option>
             {uniqueCarats.map(carat => (
@@ -113,43 +128,68 @@ function ManageProducts() {
           </select>
         </div>
       </div>
-
       {loading ? (
-        <div>Loading...</div>
+        <div className="text-center py-4 text-[#212121]">Loading...</div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-4 bg-[#F3F3F3] rounded-lg shadow">
+          <p className="text-[#212121]">No products found</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <div key={product.ProductId} className="bg-white rounded-lg shadow p-6">
-              <img 
-                src={product.Images[0]} 
-                alt={product.ProductName}
-                className="w-full h-48 object-cover rounded mb-4"
-              />
-              <h2 className="text-xl font-semibold mb-2">{product.ProductName}</h2>
-              <p className="text-gray-600 mb-2">{product.Description}</p>
-              <div className="text-sm text-gray-500 mb-2">
-                <p>Carat: {product.GoldCarat}K</p>
-                <p>Type: {product.Type}</p>
-              </div>
-              <div className="flex justify-between items-center mt-4">
-                <span className="text-lg font-bold">₹{product.Price}</span>
-                <div className="space-x-2">
-                  <button
-                    onClick={() => navigate(`/admin/products/edit/${product.ProductId}`)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(product.ProductId)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="bg-[#F3F3F3] rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-[#AC8F6F]">
+            <thead className="bg-[#4D3C2A]">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#F3F3F3] uppercase tracking-wider">Image</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#F3F3F3] uppercase tracking-wider">Product Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#F3F3F3] uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#F3F3F3] uppercase tracking-wider">Carat</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#F3F3F3] uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#F3F3F3] uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-[#F3F3F3] divide-y divide-[#AC8F6F]">
+              {filteredProducts.map((product) => (
+                <tr key={product.ProductId}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="h-16 w-16 rounded-lg overflow-hidden bg-gray-100">
+                      {product.Images && product.Images[0] ? (
+                        <img
+                          src={getImageUrl(product.Images[0])}
+                          alt={product.ProductName}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.target.src = '/placeholder-image.jpg';
+                          }}
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center bg-gray-200 text-gray-400">
+                          No Image
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-[#212121]">{product.ProductName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-[#212121]">{product.Type}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-[#212121]">{product.GoldCarat}K</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-[#212121]">₹{product.Price}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                    <Link
+                      to={`/admin/products/edit/${product.ProductId}`}
+                      className="text-[#4D3C2A] hover:text-[#AC8F6F] transition-colors duration-200"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(product.ProductId)}
+                      className="text-[#4D3C2A] hover:text-[#AC8F6F] transition-colors duration-200"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

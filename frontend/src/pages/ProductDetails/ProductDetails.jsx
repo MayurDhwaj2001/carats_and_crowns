@@ -98,7 +98,7 @@ function ProductDetails() {
             <div className="md:w-1/2 p-6">
               <div className="aspect-square overflow-hidden rounded-lg mb-4">
                 <img
-                  src={data.Images?.[selectedImage]}
+                  src={data.Images?.[selectedImage] ? `http://localhost:5000/${data.Images[selectedImage]}` : ''}
                   alt={data.ProductName}
                   className="w-full h-full object-cover object-center"
                 />
@@ -112,7 +112,7 @@ function ProductDetails() {
                     onClick={() => setSelectedImage(index)}
                   >
                     <img
-                      src={image}
+                      src={`http://localhost:5000/${image}`}
                       alt={`${data.ProductName} view ${index + 1}`}
                       className="w-full h-full object-cover object-center"
                     />

@@ -62,5 +62,14 @@ const createUser = async (req, res) => {
 };
 const updateUser = async (req, res) => {};
 const deleteUser = async (req, res) => {};
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.json({ success: true, users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
-module.exports = { fatchUser, createUser, updateUser, deleteUser };
+module.exports = { fatchUser, createUser, updateUser, deleteUser, getAllUsers };

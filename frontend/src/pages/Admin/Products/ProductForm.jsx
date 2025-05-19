@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import authContext from '../../../store/store';
 
 // Create an axios instance with authentication
 const api = axios.create({
@@ -12,15 +13,12 @@ const api = axios.create({
   }
 });
 
-// Add this import at the top with other imports
-import authContext from '../../../store/store';
-import { useContext } from 'react';
-
 function ProductForm() {
+  const { token } = useContext(authContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);  // New state for upload animation
+  const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
     ProductName: '',
@@ -39,13 +37,74 @@ function ProductForm() {
     }
   }, [id]);
 
+  // In the fetchProduct function
   const fetchProduct = async () => {
     try {
-      const response = await axios.get(`/api/products/${id}`);
-      setFormData(response.data);
-      setImages(response.data.Images);
+      const response = await api.get(`/api/products/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const productData = response.data;
+      setFormData({
+        ProductName: productData.ProductName || '',
+        Description: productData.Description || '',
+        GoldCarat: productData.GoldCarat || '',
+        Weight: productData.Weight || '',
+        Price: productData.Price || '',
+        Type: productData.Type || '',
+        Metal: productData.Metal || '',
+        Stones: productData.Stones || ''
+      });
+      // Fix image URLs when fetching
+      const imageUrls = productData.Images?.map(url => 
+        url.startsWith('http') ? url : `http://localhost:5000${url}`
+      ) || [];
+      setImages(imageUrls);
     } catch (error) {
       console.error('Error fetching product:', error);
+      alert('Failed to fetch product details');
+    }
+  };
+  
+  // In the handleImageUpload function
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + images.length > 6) {
+      alert('Maximum 6 images allowed');
+      return;
+    }
+  
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('images', file);
+    });
+  
+    setUploading(true);
+  
+    try {
+      const response = await api.post('/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.data && response.data.urls) {
+        // Make sure to use the complete URLs from the backend
+        const newImages = response.data.urls.map(url => 
+          url.startsWith('http') ? url : `http://localhost:5000${url}`
+        );
+        setImages([...images, ...newImages]);
+      } else {
+        throw new Error('Invalid response format from server');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload images. Please try again.');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -54,124 +113,45 @@ function ProductForm() {
     setFormData({ ...formData, [name]: value });
   };
 
-  // At the top of your file, after the imports
-  axios.defaults.baseURL = 'http://localhost:5000';
-  
-  // Update the handleImageUpload function
-  const handleImageUpload = async (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length + images.length > 6) {
-      alert('Maximum 6 images allowed');
-      return;
-    }
-
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('images', file);
-    });
-
-    setUploading(true);  // Start upload animation
-
-    try {
-      const response = await api.post('/api/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      if (response.data && response.data.urls) {
-        const newImages = response.data.urls.map(url => `http://localhost:5000${url}`);
-        setImages([...images, ...newImages]);
-      } else {
-        throw new Error('Invalid response format from server');
-      }
-    } catch (error) {
-      console.error('Upload error details:', error);
-      alert('Failed to upload images. Please try again.');
-    } finally {
-      setUploading(false);  // Stop upload animation
-      e.target.value = '';
-    }
-  };
-
-  // Add this JSX where you want to show the upload button and preview
-  const renderImageUpload = () => (
-    <div className="col-span-2">
-      <label className="block mb-2">Product Images (Max 6)</label>
-      <div className="flex flex-wrap gap-4 mb-4">
-        {images.map((url, index) => (
-          <div key={index} className="relative w-24 h-24">
-            <img
-              src={url}
-              alt={`Product ${index + 1}`}
-              className="w-full h-full object-cover rounded"
-            />
-            <button
-              type="button"
-              onClick={() => setImages(images.filter((_, i) => i !== index))}
-              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-            >
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
-      <div className="relative">
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleImageUpload}
-          className="w-full p-2 border rounded"
-          disabled={uploading || images.length >= 6}
-        />
-        {uploading && (
-          <div className="absolute inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          </div>
-        )}
-      </div>
-      {uploading && <p className="text-sm text-gray-500 mt-2">Uploading images...</p>}
-    </div>
-  );
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
-      // Try sessionStorage first, then localStorage
-      const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-  
+      // Strip the base URL from images before sending to backend
+      const strippedImages = images.map(url => 
+        url.replace('http://localhost:5000', '')
+      );
+
       const productData = {
         ...formData,
-        Images: images,
-        CreatedBy: parseInt(userId)
+        Images: strippedImages
       };
-  
+
       if (id) {
-        await api.put(`/api/products/${id}`, productData);
+        await api.put(`/api/products/${id}`, productData, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
       } else {
-        await api.post('/api/products', productData);
+        await api.post('/api/products', productData, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
       }
-  
+
       navigate('/admin/products');
     } catch (error) {
       console.error('Error saving product:', error);
-      if (error.message === 'User not authenticated') {
-        alert('Please log in again to continue.');
-        navigate('/login');
-      } else {
-        alert('Failed to save product. Please try again.');
-      }
+      alert('Failed to save product. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Add image preview section in the return statement
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">
@@ -287,8 +267,10 @@ function ProductForm() {
               multiple
               onChange={handleImageUpload}
               className="w-full p-2 border rounded"
-              disabled={images.length >= 6}
+              disabled={uploading || images.length >= 6}
             />
+            {uploading && <p className="text-gray-500 mt-2">Uploading images...</p>}
+            
             <div className="grid grid-cols-3 gap-4 mt-4">
               {images.map((url, index) => (
                 <div key={index} className="relative">
@@ -296,6 +278,9 @@ function ProductForm() {
                     src={url}
                     alt={`Product ${index + 1}`}
                     className="w-full h-32 object-cover rounded"
+                    onError={(e) => {
+                      e.target.src = '/placeholder-image.jpg';
+                    }}
                   />
                   <button
                     type="button"
@@ -313,15 +298,15 @@ function ProductForm() {
         <div className="mt-6 flex space-x-4">
           <button
             type="submit"
-            disabled={loading}
-            className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 disabled:bg-indigo-400"
+            disabled={loading || uploading}
+            className="bg-[#4D3C2A] text-white px-6 py-2 rounded hover:bg-[#AC8F6F] transition-colors duration-200"
           >
             {loading ? 'Saving...' : 'Save Product'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/admin/products')}
-            className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+            className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition-colors duration-200"
           >
             Cancel
           </button>

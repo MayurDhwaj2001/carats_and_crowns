@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const { authenticateToken } = require('../services/auth/authMiddleware');
+const { model } = require('../models/index');
 
 // Store OTPs temporarily
 const otpStore = new Map();
@@ -85,89 +87,16 @@ router.post('/verify-otp', (req, res) => {
   res.json({ success: true, message: 'OTP verified successfully' });
 });
 
-const { createUser, fatchUser } = require("../controller/userController");
+const { createUser, fatchUser, getAllUsers } = require("../controller/userController");
 
 /* GET users listing. */
 router.post("/createuser", createUser);
-// Change this line
+// Remove this line
 router.post("/fatchuser", fatchUser);
-
-// To this
+// And this line
 router.post("/login", fatchUser);
-// Remove the duplicate routes
-router.post('/forgot-password', async (req, res) => {
-  try {
-    const { email } = req.body;
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    const mailOptions = {
-      from: {
-        name: 'Carats and Crowns',
-        address: process.env.EMAIL_USER
-      },
-      to: email,
-      subject: 'Password Reset OTP',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Password Reset Request</h2>
-          <p>Your OTP for password reset is:</p>
-          <h1 style="color: #4F46E5; font-size: 32px; letter-spacing: 5px;">${otp}</h1>
-          <p>This OTP will expire in 5 minutes.</p>
-          <p>If you didn't request this, please ignore this email.</p>
-        </div>
-      `
-    };
 
-    await transporter.sendMail(mailOptions);
-    otpStore.set(email, {
-      otp,
-      expiry: Date.now() + 300000 // 5 minutes
-    });
-
-    res.json({ success: true, message: 'OTP sent successfully' });
-  } catch (error) {
-    console.error('Password Reset Error:', error);
-    res.status(500).json({ success: false, message: 'Failed to send OTP' });
-  }
-});
-
-const bcrypt = require('bcrypt');
-const { model } = require("../models/index");
-const { authHash, createToken, compareHash } = require("../services/auth/auth");
-
-router.post('/reset-password', async (req, res) => {
-  try {
-    const { email, newPassword } = req.body;
-    
-    // Hash the password using the same method as registration
-    const hashedPassword = await authHash({ password: newPassword });
-    
-    // Update user's password
-    const result = await model.user.update(
-      { password: hashedPassword },
-      { where: { email } }
-    );
-    
-    if (result[0] === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
-    
-    res.json({ 
-      success: true, 
-      message: 'Password reset successful' 
-    });
-  } catch (error) {
-    console.error('Reset Password Error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to reset password' 
-    });
-  }
-});
-
+// Keep only the detailed login implementation
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -221,4 +150,112 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Get all users (protected route)
+router.get('/all', authenticateToken, async (req, res) => {
+  try {
+    // Only allow admin users to access this route
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied. Admin only.' 
+      });
+    }
+
+    const users = await model.user.findAll({
+      attributes: ['id', 'name', 'email', 'role', 'createdAt'],
+      where: { deletedAt: null }
+    });
+
+    res.json({ success: true, users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error fetching users' 
+    });
+  }
+});
+
+// Add before module.exports = router;
+
+// Forgot Password - Send OTP
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await model.user.findOne({ where: { email } });
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    const info = await transporter.sendMail({
+      from: `"Carats and Crowns" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Password Reset OTP',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Hello ${user.name},</h2>
+          <p>Your OTP for password reset is:</p>
+          <h1 style="color: #4F46E5; font-size: 32px; letter-spacing: 5px;">${otp}</h1>
+          <p>This OTP will expire in 5 minutes.</p>
+          <p>If you didn't request this password reset, please ignore this email.</p>
+        </div>
+      `
+    });
+
+    otpStore.set(email, {
+      otp,
+      expiry: Date.now() + 300000, // 5 minutes
+      type: 'reset'
+    });
+
+    res.json({ success: true, message: 'Password reset OTP sent successfully' });
+  } catch (error) {
+    console.error('Forgot Password Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to process password reset request' 
+    });
+  }
+});
+
+// Add at the top with other imports
+const { authHash, compareHash } = require('../services/auth/auth');
+
+// Reset Password with OTP
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    const user = await model.user.findOne({ where: { email } });
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    // Hash the new password using authHash
+    const hashedPassword = await authHash({ password: newPassword });
+    
+    // Update the user's password
+    await user.update({ password: hashedPassword });
+
+    res.json({ 
+      success: true, 
+      message: 'Password reset successful' 
+    });
+  } catch (error) {
+    console.error('Reset Password Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to reset password' 
+    });
+  }
+});
 module.exports = router;

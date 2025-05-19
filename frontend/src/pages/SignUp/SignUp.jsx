@@ -91,17 +91,19 @@ function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+    <div className="min-h-screen bg-[#F7F0EA] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#F3F3F3] p-8 rounded-xl shadow-lg">
         {!showOTP ? (
           <>
             <div>
               <NavLink to="/">
-                <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-                  Carats and Crowns
-                </h1>
+                <img 
+                  src="/images/Logo.png" 
+                  alt="Carats and Crowns" 
+                  className="h-16 mx-auto"
+                />
               </NavLink>
-              <h2 className="mt-6 text-center text-2xl font-semibold text-gray-700">
+              <h2 className="mt-6 text-center text-2xl font-semibold text-[#212121]">
                 Create your account
               </h2>
             </div>
@@ -114,7 +116,7 @@ function SignUp() {
               <Form className="mt-8 space-y-4">
                 <div>
                   <Field
-                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-[#AC8F6F] placeholder-[#AC8F6F] text-[#212121] focus:outline-none focus:ring-[#4D3C2A] focus:border-[#4D3C2A] focus:z-10 sm:text-sm"
                     type="text"
                     name="name"
                     placeholder="Full Name"
@@ -124,7 +126,7 @@ function SignUp() {
   
                 <div>
                   <Field
-                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-[#AC8F6F] placeholder-[#AC8F6F] text-[#212121] focus:outline-none focus:ring-[#4D3C2A] focus:border-[#4D3C2A] focus:z-10 sm:text-sm"
                     type="number"
                     name="number"
                     placeholder="Phone Number"
@@ -134,7 +136,7 @@ function SignUp() {
   
                 <div>
                   <Field
-                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-[#AC8F6F] placeholder-[#AC8F6F] text-[#212121] focus:outline-none focus:ring-[#4D3C2A] focus:border-[#4D3C2A] focus:z-10 sm:text-sm"
                     type="email"
                     name="email"
                     placeholder="Email Address"
@@ -144,7 +146,7 @@ function SignUp() {
   
                 <div>
                   <Field
-                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-[#AC8F6F] placeholder-[#AC8F6F] text-[#212121] focus:outline-none focus:ring-[#4D3C2A] focus:border-[#4D3C2A] focus:z-10 sm:text-sm"
                     type="password"
                     name="password"
                     placeholder="Password"
@@ -154,7 +156,7 @@ function SignUp() {
   
                 <div>
                   <Field
-                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-[#AC8F6F] placeholder-[#AC8F6F] text-[#212121] focus:outline-none focus:ring-[#4D3C2A] focus:border-[#4D3C2A] focus:z-10 sm:text-sm"
                     type="password"
                     name="confirmPassword"
                     placeholder="Confirm Password"
@@ -162,40 +164,48 @@ function SignUp() {
                   <ErrorMessage name="confirmPassword" component="p" className="text-red-500 text-xs mt-1" />
                 </div>
   
-                <div className="flex items-center">
-                  <Field
-                    type="checkbox"
-                    name="termsAndConditions"
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                <div className="space-y-2">
+                  <div className="flex items-start">
+                    <div className="flex items-center h-5">
+                      <Field
+                        type="checkbox"
+                        name="termsAndConditions"
+                        className="h-4 w-4 text-[#4D3C2A] focus:ring-[#AC8F6F] border-[#AC8F6F] rounded accent-[#4D3C2A]"
+                      />
+                    </div>
+                    <label className="ml-2 block text-sm text-[#212121]">
+                      I accept the terms and conditions
+                    </label>
+                  </div>
+                  <ErrorMessage 
+                    name="termsAndConditions" 
+                    component="p" 
+                    className="text-red-500 text-xs pl-6" 
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    I accept the terms and conditions
-                  </label>
-                  <ErrorMessage name="termsAndConditions" component="p" className="text-red-500 text-xs mt-1" />
                 </div>
   
                 <button
                   type="submit"
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-[#F3F3F3] bg-[#4D3C2A] hover:bg-[#AC8F6F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4D3C2A]"
                 >
                   Sign Up
                 </button>
               </Form>
             </Formik>
   
-            <p className="mt-2 text-center text-sm text-gray-600">
+            <p className="mt-2 text-center text-sm text-[#212121]">
               Already have an account?{" "}
-              <NavLink to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <NavLink to="/login" className="font-medium text-[#4D3C2A] hover:text-[#AC8F6F]">
                 Login
               </NavLink>
             </p>
           </>
         ) : (
           <div className="space-y-6">
-            <h2 className="mt-6 text-center text-2xl font-semibold text-gray-700">
+            <h2 className="mt-6 text-center text-2xl font-semibold text-[#212121]">
               Verify Email
             </h2>
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-[#212121]">
               Enter the OTP sent to {userDetails?.email}
             </p>
             <div>

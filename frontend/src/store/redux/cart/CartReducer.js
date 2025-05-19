@@ -34,56 +34,72 @@ const saveCartToBackend = async (item, token, action) => {
   }
 };
 
-export const CartReducer = (state = [], action) => {
+const initialState = {
+  items: [],
+  total: 0
+};
+
+export const CartReducer = (state = initialState, action) => {
   let newState;
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
   switch (action.type) {
     case Add_to_cart:
-      const existingItem = state.find(item => item.id === action.payload.id);
+      const existingItem = state.items.find(item => item.id === action.payload.id);
       if (existingItem) {
-        newState = state.map(item =>
-          item.id === action.payload.id
-            ? { ...item, quantity: item.quantity + action.payload.quantity }
-            : item
-        );
-        saveCartToBackend({ 
-          ...existingItem, 
-          quantity: existingItem.quantity + action.payload.quantity 
-        }, token, 'update');
+        newState = {
+          ...state,
+          items: state.items.map(item =>
+            item.id === action.payload.id
+              ? { ...item, quantity: item.quantity + action.payload.quantity }
+              : item
+          )
+        };
       } else {
-        const newItem = { ...action.payload };
-        newState = [...state, newItem];
-        saveCartToBackend(newItem, token, 'add');
+        newState = {
+          ...state,
+          items: [...state.items, action.payload]
+        };
       }
-      return newState;
-
-    case Update_cart:
-      newState = state.map((item) =>
-        item.id === action.payload.id ? { ...item, ...action.payload } : item
-      );
-      saveCartToBackend(action.payload, token, 'update');
-      return newState;
+      saveCartToBackend(action.payload, token, 'add');
+      break;
 
     case Remove_from_cart:
-      // Now action.payload contains both id and cartId
+      newState = {
+        ...state,
+        items: state.items.filter(item => item.id !== action.payload.id)
+      };
       saveCartToBackend(action.payload, token, 'remove');
-      return state.filter((item) => item.id !== action.payload.id);
+      break;
+
+    case Update_cart:
+      newState = {
+        ...state,
+        items: state.items.map(item =>
+          item.id === action.payload.id
+            ? { ...item, quantity: action.payload.quantity }
+            : item
+        )
+      };
+      saveCartToBackend(action.payload, token, 'update');
+      break;
 
     case Clear_cart:
-      if (token) {
-        state.forEach(item => {
-          if (item.cartId) {
-            saveCartToBackend({ cartId: item.cartId }, token, 'remove');
-          }
-        });
-      }
-      return [];
+      newState = initialState;
+      break;
 
     case Replace_cart:
-      return action.payload;
+      newState = {
+        ...state,
+        items: action.payload
+      };
+      break;
 
     default:
       return state;
   }
+
+  // Calculate total after state changes
+  newState.total = newState.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  return newState;
 };

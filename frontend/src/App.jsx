@@ -10,7 +10,13 @@ import { ReduxStore } from "./store/redux/ReduxStore";
 import AdminRoute from "./routing/AdminRoute";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import ManageProducts from "./pages/Admin/Products/ManageProducts";
-import ProductForm from "./pages/Admin/Products/ProductForm";
+import ManageOrders from "./pages/Admin/Orders/ManageOrders";
+import ManageUsers from "./pages/Admin/Users/ManageUsers";
+import ProductForm from './pages/Admin/Products/ProductForm';
+// Update these imports
+import Checkout from './pages/Checkout/Checkout';
+import CheckoutSuccess from './pages/Checkout/Success';
+import CheckoutCancel from './pages/Checkout/Cancel';
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
@@ -34,23 +40,12 @@ function App() {
 
   return (
     <Provider store={ReduxStore}>
-      <authContext.Provider value={{ 
-        token, 
-        setToken, 
-        userName, 
-        setUserName,
-        userRole,
-        setUserRole
-      }}>
+      <authContext.Provider value={{ token, setToken, userName, setUserName, userRole, setUserRole }}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/admin" element={
-            <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
-          } />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/products" element={
             <AdminRoute>
               <ManageProducts />
@@ -66,6 +61,19 @@ function App() {
               <ProductForm />
             </AdminRoute>
           } />
+          <Route path="/admin/orders" element={
+            <AdminRoute>
+              <ManageOrders />
+            </AdminRoute>
+          } />
+          <Route path="/admin/users" element={
+            <AdminRoute>
+              <ManageUsers />
+            </AdminRoute>
+          } />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
+          <Route path="/checkout/cancel" element={<CheckoutCancel />} />
           <Route path="/*" element={<MyRoutes />} />
         </Routes>
       </authContext.Provider>
