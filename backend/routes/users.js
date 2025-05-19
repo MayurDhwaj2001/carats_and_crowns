@@ -87,7 +87,7 @@ router.post('/verify-otp', (req, res) => {
   res.json({ success: true, message: 'OTP verified successfully' });
 });
 
-const { createUser, fatchUser, getAllUsers } = require("../controller/userController");
+const { createUser, fatchUser, getAllUsers, getUserById, updateUser } = require("../controller/userController");
 
 /* GET users listing. */
 router.post("/createuser", createUser);
@@ -258,4 +258,8 @@ router.post('/reset-password', async (req, res) => {
     });
   }
 });
+router.get('/:id', authenticateToken, getUserById);
+// Add this with your other routes
+router.put('/:id', authenticateToken, updateUser);
+
 module.exports = router;

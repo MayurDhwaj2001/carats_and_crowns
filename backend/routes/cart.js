@@ -66,4 +66,17 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Clear all items from user's cart
+router.delete('/user/:userId', async (req, res) => {
+  try {
+    await cart.destroy({
+      where: { user_id: req.params.userId }
+    });
+    res.json({ message: 'Cart cleared successfully' });
+  } catch (error) {
+    console.error('Error clearing cart:', error);
+    res.status(500).json({ message: 'Error clearing cart' });
+  }
+});
+
 module.exports = router;

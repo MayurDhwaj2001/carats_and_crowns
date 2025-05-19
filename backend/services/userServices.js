@@ -83,5 +83,16 @@ const getAllUsers = async () => {
     throw error;
   }
 };
+const getUserById = async (userId) => {
+  try {
+    const user = await model.user.findByPk(userId, {
+      attributes: { exclude: ['password'] } // Don't send password
+    });
+    return user;
+  } catch (error) {
+    console.error('Error in getUserById:', error);
+    throw error;
+  }
+};
 
-module.exports = { fatchUser, createUser, updateUser, deleteUser, findUserByEmail, getAllUsers };
+module.exports = { fatchUser, createUser, updateUser, deleteUser, findUserByEmail, getAllUsers, getUserById };

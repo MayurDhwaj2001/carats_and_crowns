@@ -13,6 +13,7 @@ import ErrorPage from "../pages/ErrPage/ErrorPage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import Checkout from "../pages/Checkout/Checkout.jsx";
 import Fproduct from "../components/Fproduct/Fproduct.jsx";
+import Settings from '../pages/Settings/Settings';
 
 function MyRoutes() {
   return (
@@ -46,6 +47,7 @@ function MyRoutes() {
         </Route>
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<SignUp />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </>
   );

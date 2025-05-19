@@ -1,16 +1,10 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { NavLink, useNavigate } from "react-router-dom";
-// import {
-//   createUserWithEmailAndPassword,
-//   onAuthStateChanged,
-// } from "firebase/auth";
 import axios from "axios";
-
-// import { auth } from "../../firebase/firebase-config";
 import authContext from "../../store/store";
 import { useContext } from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 function SignUp() {
   const authCtx = useContext(authContext);
@@ -43,17 +37,18 @@ function SignUp() {
   const [showOTP, setShowOTP] = useState(false);
   const [otpValue, setOtpValue] = useState("");
   const [userDetails, setUserDetails] = useState(null);
-  
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+
   const verifyOTP = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/users/verify-otp", {
+      const response = await axios.post("http://localhost:5000/api/users/verify-otp", {
         email: userDetails.email,
         otp: otpValue
       });
 
       if (response.data.success) {
         // Create user after OTP verification
-        await axios.post("http://localhost:3000/users/createuser", userDetails);
+        await axios.post("http://localhost:5000/api/users/createuser", userDetails);
         alert("Account created successfully!");
         navigate("/login");
       }
@@ -72,7 +67,7 @@ function SignUp() {
       };
 
       // First send OTP
-      const otpResponse = await axios.post("http://localhost:3000/users/send-otp", {
+      const otpResponse = await axios.post("http://localhost:5000/api/users/send-otp", {
         email: values.email,
         name: values.name // Adding name for email personalization
       });
@@ -87,6 +82,46 @@ function SignUp() {
       const errorMessage = error.response?.data?.message || "An error occurred during signup";
       alert(errorMessage);
       console.error("Signup error:", error);
+    }
+  };
+
+  const handleContainerPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+    const digits = pastedData.replace(/\D/g, '').slice(0, 6).split('');
+    
+    if (digits.length === 0) return;
+    
+    const newOtp = Array(6).fill('');
+    digits.forEach((digit, i) => {
+      if (i < 6) newOtp[i] = digit;
+    });
+    
+    setOtp(newOtp);
+    setOtpValue(newOtp.join(''));
+    
+    const lastFilledIndex = newOtp.reduce((acc, curr, i) => curr ? i : acc, 0);
+    const inputToFocus = document.getElementById(`otp-${lastFilledIndex}`);
+    if (inputToFocus) inputToFocus.focus();
+  };
+
+  const handleOtpChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    setOtpValue(newOtp.join(''));
+
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) prevInput.focus();
     }
   };
 
@@ -202,25 +237,41 @@ function SignUp() {
           </>
         ) : (
           <div className="space-y-6">
+            <NavLink to="/">
+              <img 
+                src="/images/Logo.png" 
+                alt="Carats and Crowns" 
+                className="h-16 mx-auto"
+              />
+            </NavLink>
             <h2 className="mt-6 text-center text-2xl font-semibold text-[#212121]">
               Verify Email
             </h2>
             <p className="text-center text-sm text-[#212121]">
               Enter the OTP sent to {userDetails?.email}
             </p>
-            <div>
-              <input
-                type="text"
-                value={otpValue}
-                onChange={(e) => setOtpValue(e.target.value)}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Enter OTP"
-                maxLength="6"
-              />
+            <div 
+              className="flex justify-center space-x-4" 
+              onPaste={handleContainerPaste}
+              tabIndex="0"
+            >
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  id={`otp-${index}`}
+                  type="text"
+                  inputMode="numeric"
+                  value={digit}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className="w-12 h-12 text-center text-xl border-2 rounded-lg border-[#AC8F6F] focus:border-[#4D3C2A] focus:outline-none focus:ring-1 focus:ring-[#4D3C2A] text-[#212121]"
+                  maxLength="1"
+                />
+              ))}
             </div>
             <button
               onClick={verifyOTP}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-[#F3F3F3] bg-[#4D3C2A] hover:bg-[#AC8F6F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4D3C2A]"
             >
               Verify OTP
             </button>

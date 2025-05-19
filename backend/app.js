@@ -63,4 +63,7 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
+// Add this after your model definitions but before app.listen
+const { model } = require('./models/index');
+model.user.sync({ alter: true });
 module.exports = app;
