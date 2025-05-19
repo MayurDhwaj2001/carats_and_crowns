@@ -9,6 +9,7 @@ var uploadRouter = require('./routes/upload');
 var productsRouter = require('./routes/products');
 var cartRouter = require('./routes/cart');
 const stripeRoutes = require('./routes/stripe');
+const razorpayRoutes = require('./routes/razorpay'); // Add this line
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -47,6 +48,7 @@ app.use('/api/products', productsRouter);
 // Add this with other route configurations
 app.use('/api/cart', cartRouter);
 app.use('/api', stripeRoutes);
+app.use('/api/razorpay', razorpayRoutes); // Add this line
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

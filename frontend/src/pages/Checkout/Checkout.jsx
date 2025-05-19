@@ -15,7 +15,7 @@ function Checkout() {
       setError(null);
 
       // Create order on your backend
-      const response = await fetch('http://localhost:5000/api/create-order', {
+      const response = await fetch('http://localhost:5000/api/razorpay/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ function Checkout() {
       }
 
       const options = {
-        key: 'YOUR_RAZORPAY_KEY_ID', // Replace with your Razorpay key ID
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: "INR",
         name: "Carats & Crowns",
@@ -48,7 +48,7 @@ function Checkout() {
         handler: async function (response) {
           try {
             // Verify payment on your backend
-            const verifyResponse = await fetch('http://localhost:5000/api/verify-payment', {
+            const verifyResponse = await fetch('http://localhost:5000/api/razorpay/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -69,15 +69,25 @@ function Checkout() {
               throw new Error(verifyData.error || 'Payment verification failed');
             }
           } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Payment verification failed');
+            console.error('Payment verification error:', err);
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            setError('Payment cancelled by user');
+            setLoading(false);
           }
         },
         prefill: {
           name: "Customer Name",
-          email: "customer@example.com",
+          email: "customer@example.com"
         },
         theme: {
-          color: "#7C3AED" // Purple color to match your theme
+          color: "#4D3C2A"
+        },
+        notes: {
+          order_id: data.orderId
         }
       };
 
