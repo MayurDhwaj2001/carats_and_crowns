@@ -33,7 +33,8 @@ function Cart() {
             quantity: item.quantity,
             price: item.price,
             title: item.product.productname,
-            image: item.product.images[0]
+            // Fix the image URL by prepending the backend URL
+            image: `http://localhost:5000/${item.product.images[0]}`
           }));
           dispatch({ type: Replace_cart, payload: cartItems });
         } catch (error) {
@@ -71,81 +72,76 @@ function Cart() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-20 bg-gray-50">
-      <h1 className="text-2xl font-bold mb-8 text-purple-800">Shopping Cart</h1>
-
-      {cart.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-600 mb-4">Your cart is empty</p>
-          <NavLink
-            to="/products"
-            className="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition-colors"
-          >
-            Continue Shopping
-          </NavLink>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2">
-            {cart.map((item) => (
-              <div key={item.id} className="bg-white rounded-lg shadow-md p-6 mb-4 hover:shadow-lg transition-shadow">
-                <div className="flex items-center">
-                  <div className="w-20 h-20 overflow-hidden rounded">
-                    <img
-                      src={item.image.startsWith('http') ? item.image : `http://localhost:5000${item.image}`}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = '/images/placeholder.png'; // Add a placeholder image
-                        e.target.onerror = null; // Prevent infinite loop
-                      }}
-                    />
-                  </div>
-                  <div className="ml-4 flex-grow">
-                    <h2 className="text-lg font-semibold text-purple-800">{item.title}</h2>
-                    <p className="text-purple-600 font-medium">₹{item.price}</p>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={() => DECQuantityHendeler(item)}
-                      className="text-purple-500 hover:text-purple-700"
-                    >
-                      <FontAwesomeIcon icon={faSquareMinus} size="lg" />
-                    </button>
-                    <span className="mx-4 font-medium">{item.quantity}</span>
-                    <button
-                      onClick={() => INCQuantityHendeler(item)}
-                      className="text-purple-500 hover:text-purple-700"
-                    >
-                      <FontAwesomeIcon icon={faSquarePlus} size="lg" />
-                    </button>
-                    <button
-                      onClick={() => RemoveFromCartHendeler(item)}
-                      className="ml-6 text-red-500 hover:text-red-700"
-                    >
-                      <FontAwesomeIcon icon={faXmark} size="lg" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6 h-fit hover:shadow-lg transition-shadow">
-            <h2 className="text-lg font-semibold mb-4 text-purple-800">Order Summary</h2>
-            <div className="flex justify-between mb-4">
-              <span className="text-gray-600">Total</span>
-              <span className="text-purple-600 font-bold">₹{TotalPrice}</span>
-            </div>
-            <NavLink
-              to="/checkout"
-              className="block w-full bg-purple-600 text-white text-center py-2 px-4 rounded hover:bg-purple-700 transition-colors"
-            >
-              Proceed to Checkout
+    <div className="min-h-screen bg-[#F7F0EA] py-8">
+      <div className="container mx-auto px-4">
+        <h1 className="text-2xl font-semibold mb-8 text-[#212121]">Shopping Cart</h1>
+        {cart.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-[#4D3C2A] text-lg mb-4">Your cart is empty</p>
+            <NavLink to="/products" className="bg-[#AC8F6F] text-[#F3F3F3] px-6 py-2 rounded-md hover:bg-[#4D3C2A] transition-colors">
+              Continue Shopping
             </NavLink>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              {cart.map((item) => (
+                <div key={item.id} className="bg-white rounded-lg shadow-md p-6 mb-4 flex items-center gap-4">
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    className="w-24 h-24 object-cover rounded-md"
+                    onError={(e) => {
+                      e.target.src = '/images/placeholder.jpg'; // Fallback image
+                      e.target.onerror = null; // Prevent infinite loop
+                    }} 
+                  />
+                  <div className="flex-grow">
+                    <h2 className="text-lg font-medium text-[#212121]">{item.title}</h2>
+                    <p className="text-[#4D3C2A] font-semibold">₹{item.price}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => DECQuantityHendeler(item)}
+                        className="text-[#AC8F6F] hover:text-[#4D3C2A] transition-colors"
+                      >
+                        <FontAwesomeIcon icon={faSquareMinus} size="lg" />
+                      </button>
+                      <span className="text-[#212121] mx-2">{item.quantity}</span>
+                      <button
+                        onClick={() => INCQuantityHendeler(item)}
+                        className="text-[#AC8F6F] hover:text-[#4D3C2A] transition-colors"
+                      >
+                        <FontAwesomeIcon icon={faSquarePlus} size="lg" />
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => RemoveFromCartHendeler(item)}
+                    className="text-[#AC8F6F] hover:text-[#4D3C2A] transition-colors"
+                  >
+                    <FontAwesomeIcon icon={faXmark} size="lg" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-lg font-semibold mb-4 text-[#212121]">Order Summary</h2>
+                <div className="flex justify-between mb-4">
+                  <span className="text-[#212121]">Total</span>
+                  <span className="text-[#4D3C2A] font-semibold">₹{TotalPrice}</span>
+                </div>
+                <NavLink
+                  to="/checkout"
+                  className="block w-full bg-[#AC8F6F] text-[#F3F3F3] text-center py-2 rounded-md hover:bg-[#4D3C2A] transition-colors"
+                >
+                  Proceed to Checkout
+                </NavLink>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

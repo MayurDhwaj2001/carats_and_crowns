@@ -58,10 +58,7 @@ const AddressDisplay = ({ userAddress }) => {
         onClick={() => navigate('/settings')}
         className="mt-6 text-[#AC8F6F] hover:text-[#4D3C2A] transition-colors duration-200 flex items-center"
       >
-        <span>Edit Address</span>
-        <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-        </svg>
+       
       </button>
     </div>
   );
@@ -265,7 +262,7 @@ function Checkout() {
 
   if (!cart || cart.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
+      <div className="container mx-auto px-4 py-8 mt-20 text-center"> {/* Added mt-20 */}
         <h1 className="text-2xl font-bold mb-4 text-purple-800">Your cart is empty</h1>
         <button
           onClick={() => navigate('/products')}
@@ -278,8 +275,8 @@ function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F0EA] py-12">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="min-h-screen bg-[#F7F0EA]">
+      <div className="container mx-auto px-4 max-w-4xl pt-24"> {/* Changed pt-20 to pt-24 for more space */}
         <h1 className="text-3xl font-bold text-[#4D3C2A] mb-8">Checkout</h1>
         
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
