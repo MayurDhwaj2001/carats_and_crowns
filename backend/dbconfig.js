@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 module.exports = {
   db: {
     database: process.env.DB_DATABASE || "carats_and_crowns",

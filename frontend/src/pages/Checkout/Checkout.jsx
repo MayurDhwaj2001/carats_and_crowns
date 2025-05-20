@@ -193,26 +193,46 @@ function Checkout() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Add token for authentication
               },
               credentials: 'include',
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature
-              }),
+              })
             });
 
-            const verifyData = await verifyResponse.json();
+            const verificationResult = await verifyResponse.json();
 
-            if (verifyResponse.ok) {
-              await clearCart(); // Clear the cart after successful payment
+            if (verifyResponse.ok && verificationResult.verified) {
+              // Create order in your database
+              const userId = JSON.parse(atob(token.split('.')[1])).id;
+              await axios.post('http://localhost:5000/api/orders', {
+                user_id: userId,
+                items: cart.map(item => ({
+                  id: item.id,
+                  quantity: item.quantity,
+                  price: item.price
+                })),
+                total_amount: total,
+                payment_id: verificationResult.payment_id
+              }, {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              });
+
+              await clearCart();
               navigate('/checkout/success');
             } else {
-              throw new Error(verifyData.error || 'Payment verification failed');
+              throw new Error(verificationResult.error || 'Payment verification failed');
             }
-          } catch (err) {
-            setError(err.message || 'Payment verification failed');
-            console.error('Payment verification error:', err);
+          } catch (error) {
+            console.error('Error processing payment:', error);
+            setError(error.message || 'Payment verification failed');
+            setLoading(false);
           }
         },
         modal: {
@@ -331,3 +351,29 @@ function Checkout() {
 }
 
 export default Checkout;
+
+// In your handlePaymentSuccess function
+const handlePaymentSuccess = async (paymentId) => {
+  try {
+    const userId = JSON.parse(atob(token.split('.')[1])).id;
+    
+    // Create order
+    await axios.post('http://localhost:5000/api/orders', {
+      user_id: userId,
+      items: cart,
+      total_amount: total,
+      payment_id: paymentId
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    // Clear cart
+    await clearCart();
+    
+    // Navigate to success page
+    navigate('/success');
+  } catch (error) {
+    console.error('Error creating order:', error);
+    setError('Failed to process order');
+  }
+};

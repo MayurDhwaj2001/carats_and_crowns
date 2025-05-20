@@ -7,7 +7,7 @@ const product = Sequelize.define(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      field: 'productid' // Explicitly specify the database column name
+      field: 'productid' // This maps to lowercase in database
     },
     ProductName: {
       type: DataTypes.STRING,

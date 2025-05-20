@@ -37,18 +37,26 @@ router.post('/verify-payment', (req, res) => {
       razorpay_signature
     } = req.body;
 
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    // The correct way to generate the signature
+    const sign = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSign = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign.toString())
+      .update(sign)
       .digest("hex");
 
-    if (razorpay_signature === expectedSign) {
-      res.json({ verified: true });
+    const isValid = expectedSign === razorpay_signature;
+
+    if (isValid) {
+      res.status(200).json({
+        verified: true,
+        payment_id: razorpay_payment_id,
+        order_id: razorpay_order_id
+      });
     } else {
       res.status(400).json({ error: 'Invalid signature' });
     }
   } catch (error) {
+    console.error('Payment verification error:', error);
     res.status(500).json({ error: 'Payment verification failed' });
   }
 });

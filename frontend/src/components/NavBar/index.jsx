@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping, faGear, faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, Link } from "react-router-dom"; // Added Link import
 import authContext from "../../store/store";
 import { useContext, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -136,14 +136,15 @@ function Index() {
             <li className="menu-item">
               <NavLink to="/cart" onClick={() => setToggle(false)}>
                 <FontAwesomeIcon icon={faCartShopping} />
-                <span className="p-1 rounded-full">{cartLength}</span>
+                <span className="ml-1 bg-[#AC8F6F] text-white px-2 py-0.5 rounded-full text-xs">
+                  {cartLength}
+                </span>
               </NavLink>
             </li>
             
-            {/* Add login/user profile button */}
-            <li className="menu-item">
+            <li className="menu-item relative"> {/* Added relative positioning */}
               {token ? (
-                <div className="relative">
+                <div className="relative inline-block text-left"> {/* Updated positioning */}
                   <button 
                     onClick={toggleDropdown}
                     className="flex items-center focus:outline-none"
@@ -155,17 +156,46 @@ function Index() {
                   </button>
                   
                   {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                      {userRole === 'admin' && (
+                        <NavLink
+                          to="/admin"
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => {
+                            setShowDropdown(false);
+                            setToggle(false);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faGear} className="mr-2" />
+                          Admin Dashboard
+                        </NavLink>
+                      )}
                       <NavLink
                         to="/settings"
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowDropdown(false)}
+                        onClick={() => {
+                          setShowDropdown(false);
+                          setToggle(false);
+                        }}
                       >
                         <FontAwesomeIcon icon={faGear} className="mr-2" />
                         Settings
                       </NavLink>
+                      <NavLink
+                        to="/orders"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => {
+                          setShowDropdown(false);
+                          setToggle(false);
+                        }}
+                      >
+                        Orders
+                      </NavLink>
                       <button
-                        onClick={signOutHandler}
+                        onClick={() => {
+                          signOutHandler();
+                          setToggle(false);
+                        }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         <FontAwesomeIcon icon={faSignOut} className="mr-2" />

@@ -123,13 +123,23 @@ function ProductForm() {
         url.replace('http://localhost:5000', '')
       );
 
+      if (images.length === 0) {
+        alert('Please upload at least one image');
+        setLoading(false);
+        return;
+      }
+
       const productData = {
         ...formData,
-        Images: strippedImages
+        Images: strippedImages,
+        CreatedBy: 1 // Replace with actual user ID from context
       };
 
       if (id) {
-        await api.put(`/api/products/${id}`, productData, {
+        await api.put(`/api/products/${id}`, {
+          ...productData,
+          UpdatedBy: 1 // Replace with actual user ID from context
+        }, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -145,7 +155,15 @@ function ProductForm() {
       navigate('/admin/products');
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Failed to save product. Please try again.');
+      // Display more specific error message
+      if (error.response?.data?.errors) {
+        const errorMessages = error.response.data.errors
+          .map(err => `${err.field}: ${err.message}`)
+          .join('\n');
+        alert(`Validation errors:\n${errorMessages}`);
+      } else {
+        alert(error.response?.data?.message || 'Failed to save product. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

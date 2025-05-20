@@ -50,20 +50,37 @@ app.use('/api/cart', cartRouter);
 app.use('/api', stripeRoutes);
 app.use('/api/razorpay', razorpayRoutes); // Add this line
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+// Add orders route
+const ordersRouter = require('./routes/orders');
 
-// error handler
-app.use(function (err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-  res.status(err.status || 500);
-  res.render("error");
-});
+// Add with other route configurations
+app.use('/api/orders', ordersRouter);
 
-// Add this after your model definitions but before app.listen
+// Replace the single model sync with this
+// Replace the Promise.all block with sequential synchronization
 const { model } = require('./models/index');
-model.user.sync({ alter: true });
+
+// Sync models in order of dependencies
+async function syncModels() {
+  try {
+    // First, sync independent tables
+    await model.user.sync({ alter: true });
+    await model.category.sync({ alter: true });
+    
+    // Then sync tables that depend on users or categories
+    await model.product.sync({ alter: true });
+    await model.cart.sync({ alter: true });
+    
+    // Finally sync order-related tables
+    await model.order.sync({ alter: true });
+    await model.order_item.sync({ alter: true });
+    
+    console.log('All models synchronized successfully');
+  } catch (err) {
+    console.error('Error synchronizing models:', err);
+  }
+}
+
+// Call the sync function
+syncModels();
 module.exports = app;

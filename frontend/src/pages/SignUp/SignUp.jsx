@@ -6,6 +6,16 @@ import authContext from "../../store/store";
 import { useContext } from "react";
 import { useState } from "react";
 
+// Move axios instance outside component
+const api = axios.create({
+  baseURL: 'http://localhost:5000',
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+});
+
 function SignUp() {
   const authCtx = useContext(authContext);
   const navigate = useNavigate();
@@ -41,19 +51,23 @@ function SignUp() {
 
   const verifyOTP = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/users/verify-otp", {
+      const response = await api.post("/api/users/verify-otp", {
         email: userDetails.email,
-        otp: otpValue
+        otp: otp.join('')  // Fix: use joined OTP array
       });
 
       if (response.data.success) {
-        // Create user after OTP verification
-        await axios.post("http://localhost:5000/api/users/createuser", userDetails);
+        await api.post("/api/users/createuser", userDetails);
         alert("Account created successfully!");
         navigate("/login");
       }
     } catch (error) {
-      alert(error.response?.data?.message || "Invalid OTP");
+      console.error("OTP verification error:", error);
+      if (error.message === "Network Error") {
+        alert("Unable to connect to server. Please check if the backend server is running.");
+      } else {
+        alert(error.response?.data?.message || "Invalid OTP. Please try again.");
+      }
     }
   };
 
@@ -66,10 +80,9 @@ function SignUp() {
         password: values.password,
       };
 
-      // First send OTP
-      const otpResponse = await axios.post("http://localhost:5000/api/users/send-otp", {
+      const otpResponse = await api.post("/api/users/send-otp", {
         email: values.email,
-        name: values.name // Adding name for email personalization
+        name: values.name
       });
 
       if (otpResponse.data.success) {
@@ -79,9 +92,12 @@ function SignUp() {
         alert(otpResponse.data.message || "Failed to send OTP");
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "An error occurred during signup";
-      alert(errorMessage);
       console.error("Signup error:", error);
+      if (error.message === "Network Error") {
+        alert("Unable to connect to server. Please check if the backend server is running on port 5000.");
+      } else {
+        alert(error.response?.data?.message || "An error occurred during signup");
+      }
     }
   };
 
