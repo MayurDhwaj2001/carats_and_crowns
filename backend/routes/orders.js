@@ -35,7 +35,7 @@ router.post('/', authenticateToken, async (req, res) => {
       user_id,
       total_amount,
       payment_id,
-      status: 'completed'
+      status: 'Processing Order'
     });
 
     // Create order items

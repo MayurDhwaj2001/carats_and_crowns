@@ -8,7 +8,26 @@ const Order = Sequelize.define(
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      primaryKey: true,
+      primaryKey: true
+    },
+    order_number: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      defaultValue: () => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        
+        // Generate random alphanumeric string (2 letters + 4 numbers)
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const randomLetters = letters.charAt(Math.floor(Math.random() * letters.length)) +
+                             letters.charAt(Math.floor(Math.random() * letters.length));
+        const randomNumbers = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+        
+        return `ORD-${year}${month}${day}-${randomLetters}${randomNumbers}`;
+      }
     },
     user_id: {
       type: DataTypes.INTEGER,
@@ -35,9 +54,6 @@ const Order = Sequelize.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     }
-  },
-  {
-    timestamps: true
   }
 );
 

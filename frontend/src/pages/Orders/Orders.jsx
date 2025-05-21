@@ -94,9 +94,13 @@ function Orders() {
               <div key={order.id} className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <p className="text-sm text-[#AC8F6F]">Order #{order.id}</p>
+                    <p className="text-sm text-[#AC8F6F]">{order.order_number}</p>
                     <p className="text-sm text-gray-500">
-                      {new Date(order.order_date).toLocaleDateString()}
+                      {new Date(order.order_date).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      })}
                     </p>
                   </div>
                   <div className="text-right">
