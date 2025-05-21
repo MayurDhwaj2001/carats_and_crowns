@@ -129,6 +129,28 @@ function Orders() {
                     </div>
                   ))}
                 </div>
+                {order.status === 'Processing Order' && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        const response = await api.post(`/api/orders/cancel/${order.id}`, {}, {
+                          headers: { 'Authorization': `Bearer ${token}` } // Add the authorization header
+                        });
+                        if (response.status === 200) {
+                          // Refresh orders list
+                          fetchOrders();
+                          setError(null); // Clear any previous errors
+                        }
+                      } catch (error) {
+                        console.error('Error cancelling order:', error);
+                        setError(error.response?.data?.message || 'Failed to cancel order');
+                      }
+                    }}
+                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+                  >
+                    Cancel Order
+                  </button>
+                )}
               </div>
             ))}
           </div>

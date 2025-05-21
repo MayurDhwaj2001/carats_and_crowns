@@ -53,6 +53,11 @@ const Order = Sequelize.define(
     order_date: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
+    },
+    // Add this field to your order model
+    tracking_id: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }
 );

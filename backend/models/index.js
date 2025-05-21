@@ -34,12 +34,25 @@ cart.belongsToMany(product, {
 });
 
 // Add Order associations
+// Change these lines in the Order associations section
+// From:
 user.hasMany(Order, {
   foreignKey: 'user_id',
   onDelete: 'CASCADE'
 });
 Order.belongsTo(user, {
   foreignKey: 'user_id'
+});
+
+// To:
+user.hasMany(Order, {
+  foreignKey: 'user_id',
+  as: 'User',  // Add this line
+  onDelete: 'CASCADE'
+});
+Order.belongsTo(user, {
+  foreignKey: 'user_id',
+  as: 'User'  // Add this line
 });
 
 // Add OrderItem associations
