@@ -6,17 +6,33 @@ import { Outlet } from "react-router-dom";
 const Products = () => {
   const [product, setProduct] = useState([]);
   const [FilterArray, setFilterArray] = useState([]);
-  const [search, setSearch] = useState("");
-  const [min, setMin] = useState("");
-  const [max, setMax] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedMetal, setSelectedMetal] = useState("");
   const [error, setError] = useState("");
 
+  // Get category from URL parameters
+  const searchParams = new URLSearchParams(window.location.search);
+  const categoryParam = searchParams.get('category');
+
+  useEffect(() => {
+    // Set the type filter based on URL parameter
+    if (categoryParam) {
+      // Capitalize first letter to match the format in the database
+      const formattedCategory = categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1);
+      setSelectedType(formattedCategory);
+    }
+  }, [categoryParam]);
+
+  const compareName = (a, b) => {
+    return a.ProductName.localeCompare(b.ProductName);
+  };
+
   async function fetchProducts() {
     try {
       const response = await axios.get("http://localhost:5000/api/products");
-      console.log("Products from API:", response.data); // Debug log
+      console.log("Products from API:", response.data);
       if (response.data && Array.isArray(response.data)) {
         const sortedProducts = response.data.sort(compareName);
         setProduct(sortedProducts);
@@ -38,22 +54,17 @@ const Products = () => {
   useEffect(() => {
     let filteredArr = product;
     
-    // Search filter
-    if (search !== "") {
-      filteredArr = filteredArr.filter((item) => {
-        return item.productname?.toLowerCase().includes(search.toLowerCase());
-      });
-    }
-    
     // Price filter
-    if (min !== "") {
+    if (minPrice !== "") {
       filteredArr = filteredArr.filter((item) => {
-        return parseFloat(item.price) >= parseFloat(min);
+        const itemPrice = parseFloat(item.Price);
+        return !isNaN(itemPrice) && itemPrice >= parseFloat(minPrice);
       });
     }
-    if (max !== "") {
+    if (maxPrice !== "") {
       filteredArr = filteredArr.filter((item) => {
-        return parseFloat(item.price) <= parseFloat(max);
+        const itemPrice = parseFloat(item.Price);
+        return !isNaN(itemPrice) && itemPrice <= parseFloat(maxPrice);
       });
     }
 
@@ -72,7 +83,7 @@ const Products = () => {
     }
 
     setFilterArray(filteredArr);
-  }, [search, min, max, selectedType, selectedMetal, product]);
+  }, [minPrice, maxPrice, selectedType, selectedMetal, product]);
 
   // Get unique types and metals for filter options
   const types = [...new Set(product.filter(item => item.Type !== 'Custom').map(item => item.Type))];
@@ -88,32 +99,21 @@ const Products = () => {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-[#4D3C2A] text-sm mb-1">Search</label>
-              <input
-                type="search"
-                className="w-full p-2 border border-[#AC8F6F] rounded-md outline-none focus:ring-1 focus:ring-[#4D3C2A]"
-                placeholder="Search Products"
-                onChange={(e) => setSearch(e.target.value)}
-                value={search}
-              />
-            </div>
-            
-            <div>
               <label className="block text-[#4D3C2A] text-sm mb-1">Price Range</label>
               <div className="flex gap-2">
                 <input
                   type="number"
                   placeholder="Min"
                   className="w-1/2 p-2 border border-[#AC8F6F] rounded-md outline-none focus:ring-1 focus:ring-[#4D3C2A]"
-                  onChange={(e) => setMin(e.target.value)}
-                  value={min}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  value={minPrice}
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   className="w-1/2 p-2 border border-[#AC8F6F] rounded-md outline-none focus:ring-1 focus:ring-[#4D3C2A]"
-                  onChange={(e) => setMax(e.target.value)}
-                  value={max}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  value={maxPrice}
                 />
               </div>
             </div>

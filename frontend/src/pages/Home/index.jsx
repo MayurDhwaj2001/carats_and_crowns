@@ -6,6 +6,7 @@ import OurPromise from '../../components/OurPromise/OurPromise';
 import CustomerReviews from '../../components/CustomerReviews/CustomerReviews';
 import VisitOurStores from '../../components/VisitOurStores/VisitOurStores';
 import FAQ from '../../components/FAQ/FAQ';
+import Contact from '../../components/Contact/Contact';
 
 const HOME = () => {
   return (
@@ -18,6 +19,7 @@ const HOME = () => {
         <CustomerReviews />
         <VisitOurStores />
         <FAQ />
+        <Contact />
         <Footer />
       </div>
     </>

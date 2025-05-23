@@ -29,7 +29,93 @@ const VisitOurStores = () => {
         hours: '11:00 A.M. TO 7:00 P.M.'
       }
     ],
-    // Add other cities' stores here
+    Delhi: [
+      {
+        name: 'South Extension',
+        address: 'M-40, South Extension Part II, New Delhi',
+        pincode: '110049',
+        phone: '40993 00495',
+        hours: '10:00 A.M. TO 8:00 P.M.'
+      },
+      {
+        name: 'Connaught Place',
+        address: 'F-12, Connaught Place, New Delhi',
+        pincode: '110001',
+        phone: '40993 00496',
+        hours: '11:00 A.M. TO 9:00 P.M.'
+      }
+    ],
+    Chennai: [
+      {
+        name: 'Phoenix Marketcity',
+        address: 'Phoenix Marketcity, 142, Velachery Road, Chennai',
+        pincode: '600042',
+        phone: '40993 00497',
+        hours: '10:00 A.M. TO 9:00 P.M.'
+      },
+      {
+        name: 'T Nagar',
+        address: '42, North Usman Road, T Nagar, Chennai',
+        pincode: '600017',
+        phone: '40993 00498',
+        hours: '10:30 A.M. TO 8:00 P.M.'
+      }
+    ],
+    Gurgaon: [
+      {
+        name: 'DLF Cyber City',
+        address: 'Shop 24, Ground Floor, DLF Cyber City, Gurgaon',
+        pincode: '122002',
+        phone: '40993 00499',
+        hours: '11:00 A.M. TO 8:00 P.M.'
+      },
+      {
+        name: 'Ambience Mall',
+        address: 'Shop 132, 1st Floor, Ambience Mall, Gurgaon',
+        pincode: '122001',
+        phone: '40993 00500',
+        hours: '10:00 A.M. TO 9:00 P.M.'
+      }
+    ],
+    Guwahati: [
+      {
+        name: 'City Center Mall',
+        address: 'G.S. Road, City Center Mall, 2nd Floor, Guwahati',
+        pincode: '781005',
+        phone: '40993 00501',
+        hours: '10:30 A.M. TO 8:00 P.M.'
+      },
+      {
+        name: 'Zoo Road',
+        address: '234, R.G. Baruah Road, Zoo Road, Guwahati',
+        pincode: '781024',
+        phone: '40993 00502',
+        hours: '11:00 A.M. TO 7:30 P.M.'
+      }
+    ],
+    Bangalore: [
+      {
+        name: 'Phoenix Mall Whitefield',
+        address: 'Whitefield Main Road, Phoenix Mall, Bangalore',
+        pincode: '560066',
+        phone: '40993 00503',
+        hours: '10:00 A.M. TO 9:00 P.M.'
+      },
+      {
+        name: 'Indiranagar',
+        address: '100 Feet Road, Indiranagar, Bangalore',
+        pincode: '560038',
+        phone: '40993 00504',
+        hours: '11:00 A.M. TO 8:30 P.M.'
+      },
+      {
+        name: 'UB City',
+        address: 'UB City Mall, Vittal Mallya Road, Bangalore',
+        pincode: '560001',
+        phone: '40993 00505',
+        hours: '11:00 A.M. TO 9:00 P.M.'
+      }
+    ]
   };
 
   return (

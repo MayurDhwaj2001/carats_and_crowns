@@ -23,6 +23,9 @@ import ManageOrders from '../pages/Admin/Orders/ManageOrders';
 import ManageUsers from '../pages/Admin/Users/ManageUsers';
 import ProductForm from '../pages/Admin/Products/ProductForm';
 import Orders from "../pages/Orders/Orders.jsx";
+import CookiePolicy from "../pages/CookiePolicy/CookiePolicy";
+import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
+import Terms from '../pages/Terms/Terms';
 
 function MyRoutes() {
   return (
@@ -46,14 +49,7 @@ function MyRoutes() {
           <Route path="product/:id" element={<ProductDetails />}>
             <Route index element={<Fproduct />} />
           </Route>
-
-          {/* //:id is a parameter */}
-          <Route path="products" element={<Products />}>
-            {/* <Route path="/" element={<Products />} /> 
-                <Route path="1" element={<h1>elment 1</h1>} />
-                <Route path="2" element={<h1>elment 2</h1>} />
-                <Route path="3" element={<h1>elment 3</h1>} /> */}
-          </Route>
+          <Route path="products" element={<Products />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<ContactUs />} />
           <Route path="orders"
@@ -63,6 +59,9 @@ function MyRoutes() {
               </ProtectedRoute>
             }
           />
+          <Route path="cookie-policy" element={<CookiePolicy />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="terms" element={<Terms />} />
           <Route path="*" element={<ErrorPage />} />
         </Route>
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

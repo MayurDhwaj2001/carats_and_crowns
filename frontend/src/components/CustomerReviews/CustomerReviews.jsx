@@ -9,28 +9,28 @@ const CustomerReviews = () => {
       date: '1 May 2023',
       rating: 5,
       comment: 'Purchased a ring from jewelbox, the product was awesome, have an amazing experience, customer service is top notch, have to...',
-      avatar: '/images/customer1.jpg'
+      avatar: '/images/Testimonials/profile.png'
     },
     {
       name: 'Simran Shah',
       date: '1 May 2023',
       rating: 5,
       comment: 'Friendly staff behaviour. & All type of stock available in store.',
-      avatar: '/images/customer2.jpg'
+      avatar: '/images/Testimonials/profile.png'
     },
     {
       name: 'Sumit Bhattacharyya',
       date: '1 May 2023',
       rating: 5,
-      comment: 'Very nice experience, helpful staff and good prices along with very good collection.',
-      avatar: '/images/customer3.jpg'
+      comment: 'Great collection and excellent customer service',
+      avatar: '/images/Testimonials/profile.png'
     },
     {
       name: 'Pradip Kumar Sharma',
       date: '1 May 2023',
       rating: 5,
       comment: 'Staff behaviour is fantastic.They are talented vendor excellent wish them a good luck',
-      avatar: '/images/customer4.jpg'
+      avatar: '/images/Testimonials/profile.png'
     }
   ];
 

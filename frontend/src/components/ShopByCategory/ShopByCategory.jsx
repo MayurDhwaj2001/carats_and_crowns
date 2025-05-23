@@ -6,13 +6,13 @@ const ShopByCategory = () => {
     {
       name: 'Rings',
       image: '/images/categories/rings.jpg',
-      link: '/products?category=rings',
+      link: '/products?category=ring',
       featured: true
     },
     {
       name: 'Bracelets',
       image: '/images/categories/bracelets.jpg',
-      link: '/products?category=bracelets'
+      link: '/products?category=bracelet'
     },
     {
       name: 'Earrings',
@@ -22,7 +22,7 @@ const ShopByCategory = () => {
     {
       name: 'Pendants',
       image: '/images/categories/pendants.jpg',
-      link: '/products?category=pendants'
+      link: '/products?category=pendant'
     }
   ];
 
