@@ -9,6 +9,8 @@ const Products = () => {
   const [search, setSearch] = useState("");
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedMetal, setSelectedMetal] = useState("");
   const [error, setError] = useState("");
 
   async function fetchProducts() {
@@ -35,35 +37,46 @@ const Products = () => {
 
   useEffect(() => {
     let filteredArr = product;
+    
+    // Search filter
     if (search !== "") {
-      filteredArr = product.filter((item) => {
+      filteredArr = filteredArr.filter((item) => {
         return item.productname?.toLowerCase().includes(search.toLowerCase());
       });
     }
+    
+    // Price filter
     if (min !== "") {
       filteredArr = filteredArr.filter((item) => {
-        return item.price >= min;
+        return parseFloat(item.price) >= parseFloat(min);
       });
     }
     if (max !== "") {
       filteredArr = filteredArr.filter((item) => {
-        return item.price <= max;
+        return parseFloat(item.price) <= parseFloat(max);
       });
     }
-    setFilterArray(filteredArr);
-  }, [search, min, max, product]);
 
-  function compareName(a, b) {
-    const name1 = (a.productname || "").toUpperCase();
-    const name2 = (b.productname || "").toUpperCase();
-    let comparison = 0;
-    if (name1 > name2) {
-      comparison = 1;
-    } else if (name1 < name2) {
-      comparison = -1;
+    // Type filter
+    if (selectedType) {
+      filteredArr = filteredArr.filter((item) => {
+        return item.Type === selectedType && item.Type !== 'Custom';
+      });
     }
-    return comparison;
-  }
+
+    // Metal filter
+    if (selectedMetal) {
+      filteredArr = filteredArr.filter((item) => {
+        return item.Metal === selectedMetal;
+      });
+    }
+
+    setFilterArray(filteredArr);
+  }, [search, min, max, selectedType, selectedMetal, product]);
+
+  // Get unique types and metals for filter options
+  const types = [...new Set(product.filter(item => item.Type !== 'Custom').map(item => item.Type))];
+  const metals = [...new Set(product.map(item => item.Metal))];
 
   return (
     <>
@@ -73,7 +86,7 @@ const Products = () => {
         <div className="w-1/4 p-4 border-r border-[#AC8F6F] bg-white/50">
           <h2 className="text-xl font-medium mb-4 text-[#4D3C2A]">Filters</h2>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
               <label className="block text-[#4D3C2A] text-sm mb-1">Search</label>
               <input
@@ -103,6 +116,34 @@ const Products = () => {
                   value={max}
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-[#4D3C2A] text-sm mb-1">Type</label>
+              <select
+                className="w-full p-2 border border-[#AC8F6F] rounded-md outline-none focus:ring-1 focus:ring-[#4D3C2A]"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+              >
+                <option value="">All Types</option>
+                {types.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[#4D3C2A] text-sm mb-1">Metal</label>
+              <select
+                className="w-full p-2 border border-[#AC8F6F] rounded-md outline-none focus:ring-1 focus:ring-[#4D3C2A]"
+                value={selectedMetal}
+                onChange={(e) => setSelectedMetal(e.target.value)}
+              >
+                <option value="">All Metals</option>
+                {metals.map((metal) => (
+                  <option key={metal} value={metal}>{metal}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
