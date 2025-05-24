@@ -26,6 +26,7 @@ import Orders from "../pages/Orders/Orders.jsx";
 import CookiePolicy from "../pages/CookiePolicy/CookiePolicy";
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import Terms from '../pages/Terms/Terms';
+import CustomJewelry from "../pages/CustomJewelry/CustomJewelry.jsx";
 
 function MyRoutes() {
   return (
@@ -50,6 +51,7 @@ function MyRoutes() {
             <Route index element={<Fproduct />} />
           </Route>
           <Route path="products" element={<Products />} />
+          <Route path="custom-jewelry" element={<CustomJewelry />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<ContactUs />} />
           <Route path="orders"

@@ -116,13 +116,8 @@ function Index() {
               </NavLink>
             </li>
             <li className="menu-item">
-              <NavLink to="/about" onClick={() => setToggle(false)}>
-                About
-              </NavLink>
-            </li>
-            <li className="menu-item">
-              <NavLink to="/contact" onClick={() => setToggle(false)}>
-                Contact
+              <NavLink to="/custom-jewelry" onClick={() => setToggle(false)}>
+                Custom Jewelry
               </NavLink>
             </li>
             {userRole === 'admin' && (

@@ -13,6 +13,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get custom products
+router.get('/custom', async (req, res) => {
+  try {
+    const products = await product.findAll({
+      where: {
+        Type: 'Custom'
+      }
+    });
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching custom products:', error);
+    res.status(500).json({ message: 'Error fetching custom products' });
+  }
+});
+
 // Create a new product
 router.post('/', async (req, res) => {
   try {
