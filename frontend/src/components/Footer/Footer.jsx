@@ -1,18 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import logo from "../../images/logo.svg";
+// Remove this line
+// import logo from "../../images/logo.svg";
+
+// The rest of your imports remain the same
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFacebook,
-  faWhatsapp,
-  faInstagram,
-} from "@fortawesome/free-brands-svg-icons";
+import { faFacebook, faWhatsapp, faInstagram } from "@fortawesome/free-brands-svg-icons";
 import "../../css/footer.css";
 
 function Footer() {
   return (
-    <footer className="footer">
+    <footer className="footer pb-0.5">
       <div className="footer-content">
         <aside className="footer-brand">
           <a href="/" className="block mb-4">
@@ -78,11 +77,14 @@ function Footer() {
           <div>
             <h6 className="footer-heading">Contact</h6>
             <div className="flex flex-col gap-3">
-              <a className="footer-link" href="tel:+919163294444">+91- 91632 94444</a>
-              <a className="footer-link" href="mailto:support@jewelbox.co.in">support@jewelbox.co.in</a>
+              <a className="footer-link" href="tel:+91998765432">+91- 98765 04321</a>
+              <a className="footer-link" href="mailto:support@caratandcrown.com">support@caratandcrown.com</a>
             </div>
           </div>
         </nav>
+      </div>
+      <div className="text-center pt-2 mt-4 border-t border-gray-700">
+        <span className="footer-link">Copyright © Carats & Crowns 2025. All Right Reserved</span>
       </div>
     </footer>
   );
